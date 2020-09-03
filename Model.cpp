@@ -252,7 +252,7 @@ autopilot::Model::Model(QGraphicsView* view,QWidget* window)
 	readSettings();
 	ViewInit(window);
 	//测试
-	SURFTest();
+	//SURFTest();
 }
 
 bool autopilot::Model::connectBlueToothSerial()
