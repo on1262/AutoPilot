@@ -21,9 +21,8 @@ AutoPilot::AutoPilot(QWidget *parent)
 	connect(ui.ButtonChooseDataPath, &QPushButton::clicked, this, &AutoPilot::chooseTestFolder);
 	connect(ui.ButtonChooseMapFolder, &QPushButton::clicked, this, &AutoPilot::chooseMapFolder);
 	connect(ui.ButtonChooseSettingsPath, &QPushButton::clicked, this, &AutoPilot::chooseSettingsFile);
-	//²âÊÔ
+	//³õÊ¼»¯
 	model = new autopilot::Model(ui.ViewNavigation, this);
-	//model->IPCameraTest();
 	
 }
 

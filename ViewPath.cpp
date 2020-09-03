@@ -3,5 +3,5 @@
 
 ViewPathStep::ViewPathStep()
 {
-	this->setPixmap(QPixmap(Utils::getUIFolder() + ""))
+	//this->setPixmap(QPixmap(Utils::getUIFolder() + ""))
 }

@@ -1,4 +1,4 @@
-#include "Model.h"
+ï»¿#include "Model.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #include "qjsondocument.h"
@@ -52,7 +52,7 @@ viewVector autopilot::Model::SURF(float matchThreshold, std::string leftFilePath
 	std::vector< DMatch > good_matches;
 	for (int i = 0; i < descriptors_1.rows; i++)
 	{
-		if (matches[i].distance <= max(2 * min_dist, (double)matchThreshold))
+		if (matches[i].distance <= min(2 * min_dist, (double)matchThreshold))
 		{
 			good_matches.push_back(matches[i]);
 		}
@@ -63,13 +63,13 @@ viewVector autopilot::Model::SURF(float matchThreshold, std::string leftFilePath
 		good_matches, img_matches, Scalar::all(-1), Scalar::all(-1),
 		vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
-	//¼ÆËã·½Ïò
+	//è®¡ç®—æ–¹å‘
 	size_t matchesSize = good_matches.size();
 	viewVector vec{ 0,0,0 };
 	for (auto i = good_matches.begin(); i != good_matches.end(); i++) {
-		//¹éÒ»»¯²¢×ª»»µ½ÖÐÐÄ×ø±êÏµ, x´óÓÚ0´ú±íRÏà¶ÔÓÚLÏà»úÏòÓÒÒÆ¶¯£¬Í¬ÀíyÊÇÏòÉÏÒÆ¶¯
-		//centerÎªÕý´ú±íRÏà¶ÔÓÚL·Å´ó£¬·´Ö®ÊÇËõÐ¡
-		//Ïà»úÒÆ¶¯·½ÏòºÍÎïÌåÒÆ¶¯·½ÏòÏà·´
+		//å½’ä¸€åŒ–å¹¶è½¬æ¢åˆ°ä¸­å¿ƒåæ ‡ç³», xå¤§äºŽ0ä»£è¡¨Rç›¸å¯¹äºŽLç›¸æœºå‘å³ç§»åŠ¨ï¼ŒåŒç†yæ˜¯å‘ä¸Šç§»åŠ¨
+		//centerä¸ºæ­£ä»£è¡¨Rç›¸å¯¹äºŽLæ”¾å¤§ï¼Œåä¹‹æ˜¯ç¼©å°
+		//ç›¸æœºç§»åŠ¨æ–¹å‘å’Œç‰©ä½“ç§»åŠ¨æ–¹å‘ç›¸å
 		cv::Point2f p1{ keypoints_1[i->queryIdx].pt.x / img_1.cols - 0.5f, keypoints_1[i->queryIdx].pt.y / img_1.rows - 0.5f };
 		cv::Point2f p2{ keypoints_2[i->trainIdx].pt.x / img_2.cols - 0.5f, keypoints_2[i->trainIdx].pt.y / img_2.rows - 0.5f };
 		vec.x += p1.x - p2.x;
@@ -87,18 +87,28 @@ viewVector autopilot::Model::SURF(float matchThreshold, std::string leftFilePath
 	return vec;
 }
 
-void autopilot::Model::SURFTest(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles)
+void autopilot::Model::SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles)
 {
 	if (leftFiles.size() != rightFiles.size()) {
 		cout << "ERROR: SURFTest(): Unmatched size between leftFiles and rightFiles.";
 		return;
 	}
 	for (int i = 0; i != leftFiles.size(); i++) {
-		cout << "INFO: SURF(0.02," + leftFiles[i] + "," + rightFiles[i] + ")" << endl;
-		SURF(0.02, leftFiles[i], rightFiles[i]);
+		cout << "INFO: SURF({" + std::to_string(matchThreshold) + "," + leftFiles[i] + "," + rightFiles[i] + ")" << endl;
+		SURF(matchThreshold, leftFiles[i], rightFiles[i]);
 	}
 	cout << "SURF test end." << endl;
 	return;
+}
+
+void autopilot::Model::SURFTest()
+{
+	std::vector<std::string> leftFiles;
+	std::vector<std::string> rightFiles;
+	std::string testImgPath = Utils::getDataFolder().toStdString() + "test//";
+	leftFiles.push_back(testImgPath + "test3_origin.jpg");
+	rightFiles.push_back(testImgPath + "test3_scaleup.jpg");
+	SURFMutiFiles(0.12, rightFiles, leftFiles);
 }
 
 void autopilot::Model::IPCameraTest()
@@ -126,7 +136,7 @@ void autopilot::Model::IPCameraTest()
 
 void autopilot::Model::readSettings()
 {
-	//¶ÁÈ¡jsonÎÄ¼þ
+	//è¯»å–jsonæ–‡ä»¶
 	QString val;
 	QFile file;
 	file.setFileName(QString(settingPath));
@@ -169,7 +179,7 @@ void autopilot::Model::writeSettings()
 	QJsonDocument JsonDocument = QJsonDocument::fromJson(file.readAll(), &JsonParseError);
 	file.close();
 	QJsonObject RootObject = JsonDocument.object();
-	//ÐÞ¸ÄjsonÎÄ¼þ
+	//ä¿®æ”¹jsonæ–‡ä»¶
 	QJsonValueRef carControl = RootObject.find("CarControl").value();
 	QJsonObject m_addvalue = carControl.toObject();
 	m_addvalue.insert("RotateAngle", rotateAngle);
@@ -203,7 +213,7 @@ void autopilot::Model::writeSettings()
 	m_addvalue.insert("CompressedHeight", compressedHeight);
 	m_addvalue.insert("TranslateToBW", isTranslateToBW);
 	CV = m_addvalue;
-	//±£´æjsonÎÄ¼þ
+	//ä¿å­˜jsonæ–‡ä»¶
 	JsonDocument.setObject(RootObject); // set to json document
 	file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
 	file.write(JsonDocument.toJson());
@@ -219,12 +229,12 @@ void autopilot::Model::ViewInit(QWidget* window)
 {
 	auto s = new QGraphicsScene(window);
 	pView->setScene(s);
-	//Ìí¼Ó±³¾°
+	//æ·»åŠ èƒŒæ™¯
 	auto bg = new QGraphicsPixmapItem();
 	bg->setPixmap(Utils::getUIFolder() + "background.png");
 	bg->setPos(QPoint(0, 0));
 	s->addItem(bg);
-	//Ìí¼ÓÐ¡³µ
+	//æ·»åŠ å°è½¦
 	car = new ViewItemCar();
 	car->init(QPoint(10, 10));
 	s->addItem(car);
@@ -241,6 +251,8 @@ autopilot::Model::Model(QGraphicsView* view,QWidget* window)
 	setSettingPath(Utils::getSettingsFolder() + "settings.json");
 	readSettings();
 	ViewInit(window);
+	//æµ‹è¯•
+	SURFTest();
 }
 
 bool autopilot::Model::connectBlueToothSerial()

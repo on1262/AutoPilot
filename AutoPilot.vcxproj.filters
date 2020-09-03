@@ -76,5 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoPilot.pro" />
+    <None Include="encoding.py" />
   </ItemGroup>
 </Project>

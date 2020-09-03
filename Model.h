@@ -50,7 +50,8 @@ namespace autopilot {
 		int compressedHeight = 400; //压缩后图片高度
 		bool isTranslateToBW = false;//是否压缩成灰度图
 		viewVector SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath);
-		void SURFTest(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles);
+		void SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles);
+		void SURFTest();
 		void IPCameraTest();
 
 		/*配置文件*/
