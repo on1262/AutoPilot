@@ -2,13 +2,13 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #include "qjsondocument.h"
+#include "qgraphicsitemanimation.h"
 #include "qfile.h"
 #include "qjsonobject.h"
 #include "qjsonarray.h"
 #include "qjsonvalue.h"
 #include "qdebug.h"
 #include "Utils.h"
-
 
 using namespace std;
 using namespace cv;
@@ -225,27 +225,37 @@ void autopilot::Model::setSettingPath(QString settingPath)
 	this->settingPath = settingPath;
 }
 
+ViewPoint autopilot::Model::getCarPosition()
+{
+	return ViewPoint();
+}
+
+float autopilot::Model::getCarRotation()
+{
+	return 0.0f;
+}
+
 void autopilot::Model::ViewInit(QWidget* window)
 {
-	auto s = new QGraphicsScene(window);
-	pView->setScene(s);
+	auto scene = new QGraphicsScene(window);
+	pView->setScene(scene);
 	//添加背景
 	auto bg = new QGraphicsPixmapItem();
 	bg->setPixmap(Utils::getUIFolder() + "background.png");
 	bg->setPos(QPoint(0, 0));
-	s->addItem(bg);
+	scene->addItem(bg);
 	//添加小车
 	car = new ViewItemCar();
-	car->init(QPoint(10, 10));
-	s->addItem(car);
 
+	car->init(QPoint((double)scene->width() / 2.0, (double)scene->height() / 2.0));
+	scene->addItem(car);
 }
 
 void autopilot::Model::addViewImage()
 {
 }
 
-autopilot::Model::Model(QGraphicsView* view,QWidget* window)
+autopilot::Model::Model(QGraphicsView* view, QWidget* window)
 {
 	this->pView = view;
 	setSettingPath(Utils::getSettingsFolder() + "settings.json");
@@ -255,19 +265,71 @@ autopilot::Model::Model(QGraphicsView* view,QWidget* window)
 	//SURFTest();
 }
 
+void autopilot::Model::carMoveForward(bool flag)
+{
+	Utils::log(false, std::string("Car move forward:") + (flag ? "true" : "false"));
+	/*不需要动画，直接从蓝牙读取信息
+	if (flag == true) {
+		//如果被按下，则设置动画
+		stepTimer = new QTimeLine(10000);
+		stepTimer->setFrameRange(0, 400);
+		QGraphicsItemAnimation *animation = new QGraphicsItemAnimation;
+		animation->setItem(car);
+		animation->setTimeLine(stepTimer);
+		QPointF p = car->pos();
+		for (int i = 0; i < 400; ++i) {
+			animation->setPosAt(i / 400.0, QPointF(p.x(),p.y() - i));
+		}
+		stepTimer->start();
+	}
+	else {
+		stepTimer->stop();
+		delete stepTimer;
+	}*/
+}
+
+void autopilot::Model::carMoveBackward(bool flag)
+{
+	Utils::log(false, std::string("Car move forward:") + (flag ? "true" : "false"));
+
+}
+
+void autopilot::Model::carTurnLeft(bool flag)
+{
+	Utils::log(false, std::string("Car turn left:") + (flag ? "true" : "false"));
+
+}
+
+void autopilot::Model::carTurnRight(bool flag)
+{
+	Utils::log(false, std::string("Car turn right:") + (flag ? "true" : "false"));
+}
+
+void autopilot::Model::setNavigationNode()
+{
+	if (isNowConfiguringPath == true) {
+		//如果正在配置目标点,则结束这段配置
+		nowPath->pathEnd();
+		paths.push_back(nowPath);
+	}
+	else {
+		//nowPath = new ViewPath()
+	}
+}
+
 bool autopilot::Model::connectBlueToothSerial()
 {
-	/*
+	if (arduino != nullptr) delete arduino;
 	arduino = new SerialPort(getPortName().c_str());
 	if (arduino->isConnected() == false) {
 		cout << "ERROR: Failed to connect Serial:" << getPortName().c_str() << endl;
 	}
 	else {
 		cout << "INFO: serial port connected. COM=" << portNum << endl;
+		return true;
 	}
 	return arduino->isConnected();
-	*/
-	return false;
+
 }
 
 bool autopilot::Model::getCarSerialStatus()
@@ -285,16 +347,14 @@ void autopilot::Model::setPortName(int num)
 	portNum = num;
 }
 
-void autopilot::Model::listenOnce()
+
+std::string autopilot::Model::listenOnce()
 {
-	/*
-	if (arduino == nullptr) return;
-	if (arduino->isConnected() == true && arduino->readSerialPort(incomingData, MAX_DATA_LENGTH) > 0) {
+	
+	if (arduino == nullptr) return string();
+	if (arduino->isConnected() == true && arduino->readSerialPort(incomingData, MAX_DATA_LENGTH - 1) > 0) {
+		return string(incomingData);
 	}
-	*/
+	 return string();
 }
 
-QString autopilot::Model::getBufferText()
-{
-	return QString();
-}

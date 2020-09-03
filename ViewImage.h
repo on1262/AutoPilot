@@ -6,12 +6,14 @@
 enum ImageStatus { OutOfRange, Detected, ErrorPos };
 class ViewImage : public QGraphicsPixmapItem
 {
+
 private:
 	QString path = Utils::getUIFolder();
 	int ID;
 	QPoint pos;
 	ImageStatus status;
 public:
+
 	static ViewImage* create(int _ID, ImageStatus _status,QPoint _pos);
 	//Õº∆¨œ‡πÿ
 	//void setImage();

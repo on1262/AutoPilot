@@ -8,6 +8,9 @@
 #include <QGraphicsItem>
 #include "ViewItemCar.h"
 #include "ViewImage.h"
+#include "ViewPath.h"
+#include "qtimeline.h"
+#include "SerialPort.hpp"
 namespace autopilot {
 	/*从视角变换中还原的位置移动信息*/
 	struct viewVector {
@@ -21,26 +24,33 @@ namespace autopilot {
 		/*小车控制*/
 		float rotateAngle = 360.0; //单位旋转角度
 		float moveSpeed = 10.0; //前进后退速度
-
+		QTimeLine *stepTimer;
+		void carMoveForward(bool flag);
+		void carMoveBackward(bool flag);
+		void carTurnLeft(bool flag);
+		void carTurnRight(bool flag);
 		/*自动导航*/
+
+		QVector<ViewPath*> paths;
+		ViewPath* nowPath;
+		bool isNowConfiguringPath = false;
 		QString mapFolderPath; //地图存放文件夹
 		bool isLoadTestMapWhenStart = false; //是否在最初的时候打开测试地图
-
+		void setNavigationNode(); //设置导航点
 		/*蓝牙串口*/
 		bool connectBlueToothSerial();
 		bool getCarSerialStatus();
 		bool isCarSerialPortActivated = false;
-		//char incomingData[MAX_DATA_LENGTH];
+		char incomingData[MAX_DATA_LENGTH];
 		int baudRate = 9600;
 		int portNum = 6;
-		//SerialPort* arduino = nullptr;
+		SerialPort* arduino = nullptr;
 		std::string getPortName();
 		void setPortName(int num);
-		void listenOnce();
+		std::string listenOnce();
 		/*串口信息显示*/
-		long bufferSize = 10000;
+		long bufferSize = 1000;
 		int bufferUpdateFrequency = 115200;
-		QString getBufferText();
 
 		/*图像识别*/
 		QString testFolder;
@@ -63,6 +73,8 @@ namespace autopilot {
 		/*轨迹显示与实时检测*/
 		ViewItemCar* car;
 		QVector<ViewImage*> images;
+		ViewPoint getCarPosition();
+		float getCarRotation();
 		void ViewInit(QWidget* window); //初始化UI界面
 		void addViewImage(); //加载一张图片到地图上
 		QGraphicsView* pView;
