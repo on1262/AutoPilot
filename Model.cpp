@@ -225,15 +225,29 @@ void autopilot::Model::setSettingPath(QString settingPath)
 	this->settingPath = settingPath;
 }
 
-ViewPoint autopilot::Model::getCarPosition()
+void autopilot::Model::flushCarViewPosition()
 {
-	return ViewPoint();
+	ViewPoint rotation;
+	rotation.setRotationDeg(state.direction);
+	ViewPoint realPos = state.pos;
+	realPos.x += state.nowLength * rotation.x;
+	realPos.y += state.nowLength * rotation.y;
+	QPoint p = QPoint(
+		realPos.x * real2ViewCoef + pView->size().width / 2.0f,
+		-realPos.y * real2ViewCoef + pView->size().height / 2.0f
+	);
+	car->setPos(p);
+	return;
 }
 
-float autopilot::Model::getCarRotation()
+void autopilot::Model::flushCarViewRotation()
 {
-	return 0.0f;
+	car->setRotation(state.direction + state.nowRotation);
+	return;
 }
+
+
+
 
 void autopilot::Model::ViewInit(QWidget* window)
 {
@@ -268,41 +282,97 @@ autopilot::Model::Model(QGraphicsView* view, QWidget* window)
 void autopilot::Model::carMoveForward(bool flag)
 {
 	Utils::log(false, std::string("Car move forward:") + (flag ? "true" : "false"));
-	/*不需要动画，直接从蓝牙读取信息
-	if (flag == true) {
-		//如果被按下，则设置动画
-		stepTimer = new QTimeLine(10000);
-		stepTimer->setFrameRange(0, 400);
-		QGraphicsItemAnimation *animation = new QGraphicsItemAnimation;
-		animation->setItem(car);
-		animation->setTimeLine(stepTimer);
-		QPointF p = car->pos();
-		for (int i = 0; i < 400; ++i) {
-			animation->setPosAt(i / 400.0, QPointF(p.x(),p.y() - i));
+	if (isConnected() == true) {
+		if (flag == true) {
+			state.nowLength = 0;
+			state.exceptedLength = 200;
+			state.s = carState::forward;
+			serialWrite(QString("F0200"));
 		}
-		stepTimer->start();
+		else {
+			serialWrite(QString("S0000"));
+		}
 	}
-	else {
-		stepTimer->stop();
-		delete stepTimer;
-	}*/
+
 }
 
 void autopilot::Model::carMoveBackward(bool flag)
 {
 	Utils::log(false, std::string("Car move forward:") + (flag ? "true" : "false"));
-
+	if (isConnected() == true) {
+		if (flag == true) {
+			state.nowLength = 0;
+			state.exceptedLength = -200;
+			state.s = carState::backward;
+			serialWrite(QString("B0200"));
+		}
+		else {
+			serialWrite(QString("S0000"));
+		}
+	}
 }
 
 void autopilot::Model::carTurnLeft(bool flag)
 {
 	Utils::log(false, std::string("Car turn left:") + (flag ? "true" : "false"));
-
+	if (isConnected() == true) {
+		if (flag == true) {
+			state.nowRotation = 0;
+			state.exceptedRotation = 360;
+			state.s = carState::turnLeft;
+			serialWrite(QString("L0360"));
+		}
+		else {
+			serialWrite(QString("S0000"));
+		}
+	}
 }
 
 void autopilot::Model::carTurnRight(bool flag)
 {
 	Utils::log(false, std::string("Car turn right:") + (flag ? "true" : "false"));
+	if (isConnected() == true) {
+		if (flag == true) {
+			state.nowRotation = 0;
+			state.exceptedRotation = -360;
+			state.s = carState::turnLeft;
+			serialWrite(QString("L0360"));
+		}
+		else {
+			serialWrite(QString("S0000"));
+		}
+	}
+}
+
+void autopilot::Model::setFlushTimer()
+{
+	if (flushTimer != nullptr) flushTimer->start();
+}
+
+void autopilot::Model::flushView()
+{
+	flushCarViewRotation();
+	flushCarViewPosition();
+	switch (state.s) {
+	case carState::stopped:
+		//更新角度
+		state.direction += state.nowRotation;
+		if (state.direction > 360.0f) state.direction -= 360.0f;
+		if (state.direction < -360.0f) state.direction += 360.0f;
+		state.nowRotation = 0;
+		state.exceptedRotation = 0;
+		//更新距离
+		ViewPoint rotation;
+		rotation.setRotationDeg(state.direction);
+		state.pos.x += state.nowLength * rotation.x;
+		state.pos.y += state.nowLength * rotation.y;
+		//暂停更新
+		flushTimer->stop();
+		break;
+	case carState::shutdown:
+		Utils::log(false, "flushView: car shutdown.");
+		break;
+	}
 }
 
 void autopilot::Model::setNavigationNode()
@@ -313,7 +383,10 @@ void autopilot::Model::setNavigationNode()
 		paths.push_back(nowPath);
 	}
 	else {
-		//nowPath = new ViewPath()
+		//如果没有配置目标点，则新增目标点
+		ViewPoint direct;
+		direct.setRotationDeg(state.direction);
+		nowPath = new ViewPath(state.pos, direct);
 	}
 }
 
@@ -329,7 +402,6 @@ bool autopilot::Model::connectBlueToothSerial()
 		return true;
 	}
 	return arduino->isConnected();
-
 }
 
 bool autopilot::Model::getCarSerialStatus()
@@ -347,14 +419,86 @@ void autopilot::Model::setPortName(int num)
 	portNum = num;
 }
 
-
 std::string autopilot::Model::listenOnce()
 {
-	
 	if (arduino == nullptr) return string();
 	if (arduino->isConnected() == true && arduino->readSerialPort(incomingData, MAX_DATA_LENGTH - 1) > 0) {
 		return string(incomingData);
 	}
-	 return string();
+	return string();
 }
 
+void autopilot::Model::readBuffer(QString str) //对信息进行预处理
+{
+	str.remove("\n");
+	if (str.isEmpty() == false) {
+		cmdStr.append(str);
+		//四种情况：-XXX; -XXX;-X -XXX;- -XXX-XX;
+		QStringList data = cmdStr.split(QChar('-'), Qt::SkipEmptyParts);
+		if (data[data.size() - 1].endsWith(';') == false) {
+			data.pop_back(); //如果最后一个指令接收不全，则剔除
+		}
+		if (data.size() == CmdsCount) {
+			return; //如果剔除后没有接到新指令，则不执行操作
+		}
+		while (CmdsCount < data.size()) {
+			CmdsCount++;
+			//读取新指令
+			data[CmdsCount].remove(";");
+			readArduinoCmd(data[CmdsCount]);
+		}
+	}
+}
+
+void autopilot::Model::serialWrite(QString str)
+{
+	if (arduino == nullptr) return;
+	else {
+		bool result = arduino->writeSerialPort(str.toStdString().c_str(), MAX_DATA_LENGTH);
+		if (result == false) {
+			Utils::log(true, "serialWrite: failed to write str.");
+		}
+	}
+}
+
+void autopilot::Model::readArduinoCmd(QString str)
+{
+	std::string s = str.toStdString();
+	switch (str[0].toLatin1())
+	{
+	case 'E': 
+		state.s = carState::stopped;
+		break;
+	case 'F':
+		//根据当前车状态判断如何更新数据
+		if (state.s == carState::forward) {
+			state.nowLength = Utils::convert<int>(s.substr(1, s.size()));
+		}
+		else if (state.s == carState::forward) {
+			state.nowLength = -1 * Utils::convert<int>(s.substr(1, s.size()));
+		}
+		break;
+	case 'R':
+		if (state.s == carState::turnLeft) {
+			state.nowRotation = Utils::convert<int>(s.substr(1, s.size()));
+		}
+		else if (state.s == carState::forward) {
+			state.nowRotation = -1 * Utils::convert<int>(s.substr(1, s.size()));
+		}
+		break;
+	case 'D':
+		break; //debug信息已经输出在屏幕上了，不需要处理
+	case 'S':
+		state.s = carState::shutdown;
+		break;
+	default:
+		Utils::log(true, "read arduino cmd: illegal command syntax");
+		break;
+	}
+}
+
+bool autopilot::Model::isConnected()
+{
+	if (arduino == nullptr) return false;
+	else return arduino->isConnected();
+}

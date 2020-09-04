@@ -3,11 +3,11 @@
 
 struct ViewPoint {
 public:
-
 	float x = 0.0f;
 	float y = 0.0f;
 	float getLength();
 	float getRotationDeg(); //获取旋转角度
+	void setRotationDeg(float rotation);
 };
 /*一小段路径*/
 class ViewPathStep : public QGraphicsPixmapItem
@@ -35,7 +35,7 @@ public:
 	void addRotation(float rotationDeg); //添加向前的数据
 	void addLength(float length); //添加向后的数据
 	void pathEnd(); //结束路径
-	void flush();
+	void flush(float nowStepRotation, float nowStepLength);
 	ViewPath(ViewPoint start, ViewPoint direction);
 };
 

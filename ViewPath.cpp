@@ -55,8 +55,7 @@ void ViewPath::addRotation(float rotationDeg)
 		if (theta < 0) theta += 360.0f;
 	}
 	float length = nowStep->vec.getLength();
-	vec1.x = cosf(theta * M_PI / 180.0f);
-	vec1.y = sinf(theta * M_PI / 180.0f);
+	vec1.setRotationDeg(theta);
 	nowStep->vec.x = vec1.x * length;
 	nowStep->vec.y = vec1.y * length;
 	flush();
@@ -78,7 +77,7 @@ void ViewPath::pathEnd()
 	pStart = startStep->vec;
 }
 
-void ViewPath::flush()
+void ViewPath::flush(float nowStepRotation,float nowStepLength)
 {
 	nowStep->flush();
 }
@@ -115,4 +114,11 @@ float ViewPoint::getRotationDeg()
 		theta *= 180.0f / M_PI;
 	}
 	return theta;
+}
+
+void ViewPoint::setRotationDeg(float rotation)
+{
+	//从角度信息中还原
+	x = cos(rotation * M_PI / 180.0f);
+	y = sin(rotation * M_PI / 180.0f);
 }

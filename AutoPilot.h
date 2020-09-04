@@ -29,8 +29,13 @@ public:
 	void carMoveBackward();
 	void carTurnLeft();
 	void carTurnRight();
+
+	void flushView();
 	//À¶ÑÀ´®¿Ú
+
+	bool isControllingStart = false;
 	void serialTextUpdate();
+	void startControl();
 private:
 	Ui::MainWindow ui;
 	QString mapFolderPath;

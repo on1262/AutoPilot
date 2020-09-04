@@ -19,17 +19,21 @@ AutoPilot::AutoPilot(QWidget *parent)
 	connect(ui.ButtonAutoPilotUpdate, &QPushButton::clicked, this, &AutoPilot::updateBlueToothSerial);
 	connect(ui.ButtonCarBlueToothConnect, &QPushButton::clicked, this, &AutoPilot::connectCarBluetoothSerial);
 	connect(ui.ButtonConnectCar, &QPushButton::clicked, this, &AutoPilot::connectCarBluetoothSerial);
-
 	connect(ui.ButtonChooseCacheFolder, &QPushButton::clicked, this, &AutoPilot::chooseCacheFolder);
 	connect(ui.ButtonChooseDataPath, &QPushButton::clicked, this, &AutoPilot::chooseTestFolder);
 	connect(ui.ButtonChooseMapFolder, &QPushButton::clicked, this, &AutoPilot::chooseMapFolder);
 	connect(ui.ButtonChooseSettingsPath, &QPushButton::clicked, this, &AutoPilot::chooseSettingsFile);
+	connect(ui.ButtonStartControl, &QPushButton::clicked, this, &AutoPilot::chooseSettingsFile);
 	//初始化模型
 	model = new autopilot::Model(ui.ViewNavigation, this);
 	//初始化小车控制模块的连接
 	connect(ui.ButtonForward, &QPushButton::pressed, this, &AutoPilot::carMoveForward);
 	connect(ui.ButtonForward, &QPushButton::released, this, &AutoPilot::carMoveForward);
-	
+	//初始化view的刷新计时器
+	model->flushTimer = new QTimer();
+	model->flushTimer->setInterval(300);
+	connect(model->flushTimer, &QTimer::timeout, this, flushView);
+
 }
 
 void AutoPilot::updateSettingsUI()
@@ -131,12 +135,28 @@ void AutoPilot::carTurnRight()
 	model->carMoveBackward(flagRight);
 }
 
+void AutoPilot::flushView()
+{
+	model->flushView();
+}
+
 
 
 void AutoPilot::serialTextUpdate()
 {
 	QString str = QString::fromStdString(model->listenOnce());
-	if(str.isEmpty() == false) ui.BrowserBuffer->append(str);
+	QString str2 = str;
+	str2.remove(";");
+	str2.replace("-", "\n");
+	ui.BrowserBuffer->append(str2);	
+	
+}
+
+void AutoPilot::startControl()
+{
+	isControllingStart = true;
+	ui.BrowserBuffer->clear();
+	model->CmdsCount = 0; //重置指令数量
 }
 
 void AutoPilot::chooseMapFolder()
@@ -187,7 +207,7 @@ void AutoPilot::connectCarBluetoothSerial()
 		if (bufferUpdateTimer != nullptr) delete bufferUpdateTimer;
 		bufferUpdateTimer = new QTimer(this);
 		//bufferUpdateTimer->setInterval(1000 / model->bufferUpdateFrequency);
-		bufferUpdateTimer->setInterval(100);
+		bufferUpdateTimer->setInterval(50);
 		bufferUpdateTimer->start();
 		connect(bufferUpdateTimer, &QTimer::timeout, this, &AutoPilot::serialTextUpdate);
 	}
