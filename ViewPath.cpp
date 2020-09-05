@@ -39,7 +39,7 @@ void ViewPath::addStep()
 	ViewPathStep* step = new ViewPathStep(nowStep,nowStep->vec);
 	nowStep->next = step;
 	nowStep = step;
-	flush();
+	//flush()
 }
 
 void ViewPath::addRotation(float rotationDeg)
@@ -58,7 +58,7 @@ void ViewPath::addRotation(float rotationDeg)
 	vec1.setRotationDeg(theta);
 	nowStep->vec.x = vec1.x * length;
 	nowStep->vec.y = vec1.y * length;
-	flush();
+	//flush();
 }
 
 void ViewPath::addLength(float length)
@@ -67,7 +67,7 @@ void ViewPath::addLength(float length)
 	k = (k + length) / k;
 	nowStep->vec.x *= k;
 	nowStep->vec.y *= k;
-	flush();
+	//flush();
 }
 
 void ViewPath::pathEnd()

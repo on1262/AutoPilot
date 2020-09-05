@@ -14,77 +14,159 @@ using namespace std;
 using namespace cv;
 using namespace autopilot;
 
-viewVector autopilot::Model::SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath)
+viewVector autopilot::Model::SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath)//model.cpp只改了这个函数，但精度不如用robustMatcher
 {
-	cv::Mat img_1 = cv::imread(leftFilePath);
-	cv::Mat img_2 = cv::imread(rightFilePath);
-
-	if (!img_1.data || !img_2.data)
-	{
-		std::cout << " --(!) Error reading images " << std::endl;
+	std::vector<cv::DMatch> matches;
+	std::vector<cv::KeyPoint> keypoints1;
+	std::vector<cv::KeyPoint> keypoints2;
+	viewVector vec1 = b.match(leftFilePath, rightFilePath, matches, keypoints1, keypoints2);
+	if (!(vec1.x == -255 && vec1.y == -255 && vec1.center == -255)) {
+		return vec1;
 	}
-	//-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
-	int minHessian = 400;
-	Ptr<xfeatures2d::SURF> detector = xfeatures2d::SURF::create();
-	detector->setHessianThreshold(minHessian);
-	std::vector<KeyPoint> keypoints_1, keypoints_2;
-	Mat descriptors_1, descriptors_2;
-	detector->detectAndCompute(img_1, Mat(), keypoints_1, descriptors_1);
-	detector->detectAndCompute(img_2, Mat(), keypoints_2, descriptors_2);
-	//-- Step 2: Matching descriptor vectors using FLANN matcher
-	FlannBasedMatcher matcher;
-	std::vector< DMatch > matches;
-	matcher.match(descriptors_1, descriptors_2, matches);
-	double max_dist = 0; double min_dist = 100;
-	//-- Quick calculation of max and min distances between keypoints
-	for (int i = 0; i < descriptors_1.rows; i++)
+	viewVector vec_final{ 0,0,0 };
+	int minHessian = 400; bool match_judge = false;
+	do
 	{
-		double dist = matches[i].distance;
-		if (dist < min_dist) min_dist = dist;
-		if (dist > max_dist) max_dist = dist;
-	}
-	printf("-- Max dist : %f \n", max_dist);
-	printf("-- Min dist : %f \n", min_dist);
-	//-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist,
-	//-- or a small arbitary value ( 0.02 ) in the event that min_dist is very
-	//-- small)
-	//-- PS.- radiusMatch can also be used here.
-	std::vector< DMatch > good_matches;
-	for (int i = 0; i < descriptors_1.rows; i++)
-	{
-		if (matches[i].distance <= min(2 * min_dist, (double)matchThreshold))
+		cv::Mat image1, image2;
+		cv::Mat img1 = cv::imread(leftFilePath);
+		cv::Mat img2 = cv::imread(rightFilePath);
+		resize(img1, image1, Size(380, 507));
+		resize(img2, image2, Size(380, 507));
+		if (!image1.data || !image2.data)
 		{
-			good_matches.push_back(matches[i]);
+			std::cout << " --(!) Error reading images " << std::endl;
 		}
-	}
-	//-- Draw only "good" matches
-	Mat img_matches;
-	drawMatches(img_1, keypoints_1, img_2, keypoints_2,
-		good_matches, img_matches, Scalar::all(-1), Scalar::all(-1),
-		vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+		//-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
+		Ptr<xfeatures2d::SURF> detector = xfeatures2d::SURF::create();
+		detector->setHessianThreshold(minHessian);
+		std::vector<KeyPoint> keypoints1, keypoints2;
+		Mat descriptors_1, descriptors_2;
+		detector->detectAndCompute(image1, Mat(), keypoints1, descriptors_1);
+		detector->detectAndCompute(image2, Mat(), keypoints2, descriptors_2);
+		//-- Step 2: Matching descriptor vectors using FLANN matcher
+		FlannBasedMatcher matcher;
+		std::vector< DMatch > matches;
+		matcher.match(descriptors_1, descriptors_2, matches);
+		double max_dist = 0; double min_dist = 100;
+		//-- Quick calculation of max and min distances between keypoints
+		for (int i = 0; i < descriptors_1.rows; i++)
+		{
+			double dist = matches[i].distance;
+			if (dist < min_dist) min_dist = dist;
+			if (dist > max_dist) max_dist = dist;
+		}
+		//-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist,
+		//-- or a small arbitary value ( 0.02 ) in the event that min_dist is very
+		//-- small)
+		//-- PS.- radiusMatch can also be used here.
+		std::vector< DMatch > good_matches;
+		for (int i = 0; i < descriptors_1.rows; i++)
+		{
+			if (matches[i].distance <= min(2 * min_dist, (double)matchThreshold))
+			{
+				good_matches.push_back(matches[i]);
+			}
+		}
+		//计算方向
+		size_t matchesSize = good_matches.size();
+		viewVector vec{ 0,0,0 };
+		for (auto i = good_matches.begin(); i != good_matches.end(); i++) {
+			//归一化并转换到中心坐标系, x大于0代表R相对于L相机向右移动，同理y是向上移动
+			//center为正代表R相对于L放大，反之是缩小
+			//相机移动方向和物体移动方向相反
+			cv::Point2f p1{ keypoints1[i->queryIdx].pt.x / image1.cols - 0.5f, keypoints1[i->queryIdx].pt.y / image1.rows - 0.5f };
+			cv::Point2f p2{ keypoints2[i->trainIdx].pt.x / image2.cols - 0.5f, keypoints2[i->trainIdx].pt.y / image2.rows - 0.5f };
+			vec.x += p1.x - p2.x;
+			vec.y += p2.y - p1.y;
+			vec.center += ((p2 - p1).dot(p1) / sqrtf(p1.x * p1.x + p1.y * p1.y));
+		}
+		vec.x /= matchesSize;
+		vec.y /= matchesSize;
+		vec.center /= matchesSize;
+		std::vector<KeyPoint> keypoints_final1, keypoints_final2;  
 
-	//计算方向
-	size_t matchesSize = good_matches.size();
-	viewVector vec{ 0,0,0 };
-	for (auto i = good_matches.begin(); i != good_matches.end(); i++) {
-		//归一化并转换到中心坐标系, x大于0代表R相对于L相机向右移动，同理y是向上移动
-		//center为正代表R相对于L放大，反之是缩小
-		//相机移动方向和物体移动方向相反
-		cv::Point2f p1{ keypoints_1[i->queryIdx].pt.x / img_1.cols - 0.5f, keypoints_1[i->queryIdx].pt.y / img_1.rows - 0.5f };
-		cv::Point2f p2{ keypoints_2[i->trainIdx].pt.x / img_2.cols - 0.5f, keypoints_2[i->trainIdx].pt.y / img_2.rows - 0.5f };
-		vec.x += p1.x - p2.x;
-		vec.y += p2.y - p1.y;
-		vec.center += ((p2 - p1).dot(p1) / sqrtf(p1.x * p1.x + p1.y * p1.y));
-	}
-	vec.x /= matchesSize;
-	vec.y /= matchesSize;
-	vec.center /= matchesSize;
-	cout << "normalized delta x=" << vec.x << endl;
-	cout << "normalized delta y=" << vec.y << endl;
-	cout << "normalized center=" << vec.center << endl;
-	//-- Show detected matches
-	imshow(leftFilePath + " to " + rightFilePath, img_matches);
-	return vec;
+		for (auto i = good_matches.begin(); i != good_matches.end(); i++) {
+			//归一化并转换到中心坐标系, x大于0代表R相对于L相机向右移动，同理y是向上移动
+			//center为正代表R相对于L放大，反之是缩小
+			//相机移动方向和物体移动方向相反
+			cv::Point2f p1{ keypoints1[i->queryIdx].pt.x / image1.cols - 0.5f, keypoints1[i->queryIdx].pt.y / image1.rows - 0.5f };
+			cv::Point2f p2{ keypoints2[i->trainIdx].pt.x / image2.cols - 0.5f, keypoints2[i->trainIdx].pt.y / image2.rows - 0.5f };
+			if ((p1.x - p2.x)*vec.x > 0 && (p2.y - p1.y)*vec.y > 0)//同向
+			{
+				keypoints_final1.push_back(keypoints1[i->queryIdx]);
+				keypoints_final2.push_back(keypoints2[i->trainIdx]);
+			}
+		}
+		Mat descriptors_final1, descriptors_final2;
+		detector->compute(image1, keypoints_final1, descriptors_final1);
+		detector->compute(image2, keypoints_final2, descriptors_final2);
+		//-- Step 2: Matching descriptor vectors using FLANN matcher
+		FlannBasedMatcher matcher_final; std::vector< DMatch > matches_final;
+		matcher_final.match(descriptors_final1, descriptors_final2, matches_final);
+		double max_dist_final = 0; double min_dist_final = 100;
+		//-- Quick calculation of max and min distances between keypoints
+		for (int i = 0; i < descriptors_final1.rows; i++)
+		{
+			double dist = matches_final[i].distance;
+			if (dist < min_dist_final) min_dist_final = dist;
+			if (dist > max_dist_final) max_dist_final = dist;
+		}
+		//-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist,
+		//-- or a small arbitary value ( 0.02 ) in the event that min_dist is very
+		//-- small)
+		//-- PS.- radiusMatch can also be used here.
+
+		for (int i = 0; i < descriptors_final1.rows; i++)
+		{
+			if (matches_final[i].distance <= min(2 * min_dist_final, (double)matchThreshold))
+			{
+				matches_final.push_back(matches_final[i]);
+			}
+		}
+		size_t matchesSize_final = matches_final.size();
+		//计算方向
+		if (matches_final.size() != 0)
+		{
+			for (auto i = matches_final.begin(); i != matches_final.end(); i++) {
+				//归一化并转换到中心坐标系, x大于0代表R相对于L相机向右移动，同理y是向上移动
+				//center为正代表R相对于L放大，反之是缩小
+				//相机移动方向和物体移动方向相反
+				cv::Point2f p1{ keypoints_final1[i->queryIdx].pt.x / image1.cols - 0.5f, keypoints_final1[i->queryIdx].pt.y / image1.rows - 0.5f };
+				cv::Point2f p2{ keypoints_final2[i->trainIdx].pt.x / image2.cols - 0.5f, keypoints_final2[i->trainIdx].pt.y / image2.rows - 0.5f };
+				vec_final.x += p1.x - p2.x;
+				vec_final.y += p2.y - p1.y;
+				vec_final.center += ((p2 - p1).dot(p1) / sqrtf(p1.x * p1.x + p1.y * p1.y));
+				/*vec.center += ((p2 - p1).dot(p1) / sqrtf(p1.x * p1.x + p1.y * p1.y));*/
+			}
+			vec_final.x /= matchesSize_final;
+			vec_final.y /= matchesSize_final;
+			vec_final.center = vec.center;
+			cout << "normalized delta x=" << vec_final.x << endl;
+			cout << "normalized delta y=" << vec_final.y << endl;
+			cout << "normalized center(surf)=" << vec.center << endl;
+
+			//-- Draw only "good" matches
+			Mat img_matches;
+			drawMatches(image1, keypoints_final1, image2, keypoints_final2,
+				matches_final, img_matches, Scalar::all(-1), Scalar::all(-1),
+				vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
+			//-- Show detected matches
+			Mat dst; double scale = 0.5;
+			resize(img_matches, dst, Size(img_matches.cols*scale, img_matches.rows*scale));
+			imshow(leftFilePath + " to " + rightFilePath, dst);
+			return vec_final;
+		}
+		else
+		{
+			minHessian -= 25;
+			if (minHessian <= 0)
+			{
+				return vec_final;
+			}
+		}
+	} while (match_judge == false);
+	return vec_final;
 }
 
 void autopilot::Model::SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles)
@@ -233,8 +315,8 @@ void autopilot::Model::flushCarViewPosition()
 	realPos.x += state.nowLength * rotation.x;
 	realPos.y += state.nowLength * rotation.y;
 	QPoint p = QPoint(
-		realPos.x * real2ViewCoef + pView->size().width / 2.0f,
-		-realPos.y * real2ViewCoef + pView->size().height / 2.0f
+		realPos.x * real2ViewCoef + pView->size().width() / 2.0f,
+		-realPos.y * real2ViewCoef + pView->size().height() / 2.0f
 	);
 	car->setPos(p);
 	return;
@@ -245,9 +327,6 @@ void autopilot::Model::flushCarViewRotation()
 	car->setRotation(state.direction + state.nowRotation);
 	return;
 }
-
-
-
 
 void autopilot::Model::ViewInit(QWidget* window)
 {
@@ -276,7 +355,7 @@ autopilot::Model::Model(QGraphicsView* view, QWidget* window)
 	readSettings();
 	ViewInit(window);
 	//测试
-	//SURFTest();
+	SURFTest();
 }
 
 void autopilot::Model::carMoveForward(bool flag)
@@ -293,7 +372,6 @@ void autopilot::Model::carMoveForward(bool flag)
 			serialWrite(QString("S0000"));
 		}
 	}
-
 }
 
 void autopilot::Model::carMoveBackward(bool flag)
@@ -353,8 +431,8 @@ void autopilot::Model::flushView()
 {
 	flushCarViewRotation();
 	flushCarViewPosition();
-	switch (state.s) {
-	case carState::stopped:
+
+	if (state.s == carState::stopped) {
 		//更新角度
 		state.direction += state.nowRotation;
 		if (state.direction > 360.0f) state.direction -= 360.0f;
@@ -368,10 +446,9 @@ void autopilot::Model::flushView()
 		state.pos.y += state.nowLength * rotation.y;
 		//暂停更新
 		flushTimer->stop();
-		break;
-	case carState::shutdown:
+	}
+	else if (state.s == carState::shutdown) {
 		Utils::log(false, "flushView: car shutdown.");
-		break;
 	}
 }
 
@@ -466,7 +543,7 @@ void autopilot::Model::readArduinoCmd(QString str)
 	std::string s = str.toStdString();
 	switch (str[0].toLatin1())
 	{
-	case 'E': 
+	case 'E':
 		state.s = carState::stopped;
 		break;
 	case 'F':

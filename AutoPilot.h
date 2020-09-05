@@ -4,6 +4,9 @@
 #include "ui_AutoPilot.h"
 #include "Model.h"
 #include "qtimer.h"
+#include <QTimer>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 class AutoPilot : public QMainWindow
 {
     Q_OBJECT
@@ -36,6 +39,14 @@ public:
 	bool isControllingStart = false;
 	void serialTextUpdate();
 	void startControl();
+	//Í¼Ïñ´«Êä
+	QTimer *timer;
+	cv::VideoCapture cap;
+	cv::Mat frame;
+	QImage qt_image;
+	void AutoPilot::openCam();
+	void AutoPilot::closeCam();
+	void AutoPilot::camUpdate();
 private:
 	Ui::MainWindow ui;
 	QString mapFolderPath;

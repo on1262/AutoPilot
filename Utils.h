@@ -1,5 +1,6 @@
 #pragma once
 #include "qstring.h"
+#include <sstream>
 class Utils
 {
 private:
@@ -12,6 +13,7 @@ public:
 	static QString getSettingsFolder();
 	static bool floatEqual(float left, float right,float prec = 0.00001);
 	static void log(bool isError, std::string str);
+	static std::stringstream ss;
 	template<typename T>
 	static T convert(std::string str)
 	{

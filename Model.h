@@ -11,13 +11,10 @@
 #include "ViewPath.h"
 #include "qtimer.h"
 #include "SerialPort.hpp"
+#include "RobustMatcher.h"
+#include "viewVector.h"
 namespace autopilot {
-	/*从视角变换中还原的位置移动信息*/
-	struct viewVector {
-		float x; //水平移动距离
-		float y; //垂直移动距离
-		float center; //中心放缩距离
-	};
+
 	struct carState {
 		enum state {
 			forward, backward, turnLeft, turnRight, stopped, shutdown, unDetected
@@ -75,6 +72,7 @@ namespace autopilot {
 		void readArduinoCmd(QString str);
 		bool isConnected();
 		/*图像识别*/
+		RobustMatcher b;
 		QString testFolder;
 		QString cacheFolder; //实时图片存储的文件
 		int cameraSamplingFrequency = 10; //对视频流采样的频率

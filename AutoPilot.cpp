@@ -4,8 +4,9 @@
 #include "qpropertyanimation.h"
 #include <iostream>
 #include "qfiledialog.h"
-using namespace std;
 
+using namespace std;
+using namespace cv;
 AutoPilot::AutoPilot(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -32,7 +33,7 @@ AutoPilot::AutoPilot(QWidget *parent)
 	//初始化view的刷新计时器
 	model->flushTimer = new QTimer();
 	model->flushTimer->setInterval(300);
-	connect(model->flushTimer, &QTimer::timeout, this, flushView);
+	connect(model->flushTimer, &QTimer::timeout, this, &AutoPilot::flushView);
 
 }
 
@@ -211,5 +212,50 @@ void AutoPilot::connectCarBluetoothSerial()
 		bufferUpdateTimer->start();
 		connect(bufferUpdateTimer, &QTimer::timeout, this, &AutoPilot::serialTextUpdate);
 	}
+}
+
+void AutoPilot::openCam()
+{
+	cap.open(0);
+	if (!cap.isOpened())  // Check if we succeeded
+	{
+		cout << "camera is not open" << endl;
+	}
+	else
+	{
+		cout << "camera is open" << endl;
+
+		connect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
+		timer->start(20);
+	}
+}
+
+void AutoPilot::closeCam()
+{
+	disconnect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
+	cap.release();
+
+	Mat image = Mat::zeros(frame.size(), CV_8UC3);
+
+	qt_image = QImage((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_RGB888);
+
+	ui.labelWebCam->setPixmap(QPixmap::fromImage(qt_image));
+
+	ui.labelWebCam->resize(ui.labelWebCam->pixmap()->size());
+
+	cout << "camera is closed" << endl;
+}
+
+void AutoPilot::camUpdate()
+{
+	cap >> frame;
+
+	cvtColor(frame, frame, COLOR_BGR2RGB);
+
+	qt_image = QImage((const unsigned char*)(frame.data), frame.cols, frame.rows, QImage::Format_RGB888);
+
+	ui.labelWebCam->setPixmap(QPixmap::fromImage(qt_image));
+
+	ui.labelWebCam->resize(ui.labelWebCam->pixmap()->size());
 }
 

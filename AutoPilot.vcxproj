@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="RobustMatcher.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="ViewImage.cpp" />
@@ -107,17 +108,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h" />
+    <ClInclude Include="RobustMatcher.h" />
     <ClInclude Include="SerialPort.hpp" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="ViewImage.h" />
     <ClInclude Include="ViewItemCar.h" />
     <ClInclude Include="ViewPath.h" />
+    <ClInclude Include="viewVector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoPilot.pro" />
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
     <None Include="encoding.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
