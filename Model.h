@@ -13,6 +13,7 @@
 #include "SerialPort.hpp"
 #include "RobustMatcher.h"
 #include "viewVector.h"
+#include "qlabel.h"
 namespace autopilot {
 
 	struct carState {
@@ -42,14 +43,7 @@ namespace autopilot {
 		void carTurnRight(bool flag);
 		void setFlushTimer();
 		void flushView();
-		/*自动导航*/
-		carState state; //小车当前状态
-		QVector<ViewPath*> paths;
-		ViewPath* nowPath;
-		bool isNowConfiguringPath = false;
-		QString mapFolderPath; //地图存放文件夹
-		bool isLoadTestMapWhenStart = false; //是否在最初的时候打开测试地图
-		void setNavigationNode(); //设置导航点
+
 		/*蓝牙串口*/
 		bool connectBlueToothSerial();
 		bool getCarSerialStatus();
@@ -68,12 +62,15 @@ namespace autopilot {
 		QString cmdStr;
 		int CmdsCount = 0; //接收到的指令数量
 		void readBuffer(QString str);
-		void serialWrite(QString str);
+		void serialWrite(std::string str);
 		void readArduinoCmd(QString str);
 		bool isConnected();
 		/*图像识别*/
+		cv::Mat nowDisplayingImg;
+		bool isCamConnected = false;
 		RobustMatcher b;
 		QString testFolder;
+		QString mapFolderPath;
 		QString cacheFolder; //实时图片存储的文件
 		int cameraSamplingFrequency = 10; //对视频流采样的频率
 		int compressedWidth = 300; //压缩后图片宽度
@@ -82,7 +79,6 @@ namespace autopilot {
 		viewVector SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath);
 		void SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles);
 		void SURFTest();
-		void IPCameraTest();
 
 		/*配置文件*/
 		QString settingPath; //配置文件的路径
@@ -90,13 +86,24 @@ namespace autopilot {
 		void writeSettings(); //将界面的内容保存到设置文件中
 		void setSettingPath(QString settingPath); //改变配置文件的路径
 
-		/*轨迹显示与实时检测*/
+		/*轨迹显示与自动导航*/
+		QLabel* labelNavigationStatus;
 		double real2ViewCoef = 20; //现实中1cm对应多少像素，这里取20就是对应20像素。
+		carState state; //小车当前状态
 		ViewItemCar* car;
 		QVector<ViewImage*> images;
+		ViewImage*  addViewImageFromNowPos(); //根据当前位置得到一张图片
+		void cmdFinished(bool isStoppedByError); //接收到E指令后
+		void flushCarViewPosition(bool isFlushPos); //根据state刷新
+		void flushCarViewRotation(bool isFlushDirection);
 
-		void flushCarViewPosition(); //根据state刷新
-		void flushCarViewRotation();
+		QVector<ViewPath*> paths; //所有路径的集合
+		ViewPath* nowPath;
+		bool isOnNavigationPoint = false; //是否在点上
+		bool isNowDrawingPath = false; //是否在绘制路径
+		bool isLoadTestMapWhenStart = false; //是否在最初的时候打开测试地图
+		void setNavigationNode(); //设置导航点
+		void startAutoNavigation(int pointID);
 		/**
 		 * 坐标说明
 		 * 屏幕坐标和小车坐标是两套坐标，屏幕坐标以左上角为原点，单位长度对应一个像素
@@ -104,8 +111,8 @@ namespace autopilot {
 		 * 默认情况下小车现实坐标原点与画布中心重合
 		**/
 		void ViewInit(QWidget* window); //初始化UI界面
-		void addViewImage(); //加载一张图片到地图上
+		
 		QGraphicsView* pView;
-		Model(QGraphicsView* view, QWidget* window);
+		Model(QGraphicsView* view, QLabel* labelNavigationStatus,QWidget* window);
 	};
 }

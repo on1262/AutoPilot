@@ -1,4 +1,5 @@
 #include "RobustMatcher.h"
+#include "Utils.h"
 using namespace cv;
 using namespace autopilot;
 using namespace cv::xfeatures2d;
@@ -142,7 +143,7 @@ cv::Mat RobustMatcher::ransacTest(const std::vector<cv::DMatch>& matches, const 
 	{
 		return fundemental;
 	}
-	std::cout << "Number of matched points (after cleaning): " << outMatches.size() << std::endl;
+	Utils::log(false, "Number of matched points (after cleaning): " + outMatches.size());
 	if (refineF) {
 		// The F matrix will be recomputed with all accepted matches
 
@@ -223,9 +224,10 @@ viewVector RobustMatcher::match(std::string leftFilePath, std::string rightFileP
 		vec.x /= matchesSize;
 		vec.y /= matchesSize;
 		vec.center /= matchesSize;
-		cout << "normalized delta x=" << vec.x << endl;
-		cout << "normalized delta y=" << vec.y << endl;
-		cout << "normalized center=" << vec.center << endl;
+		Utils::log(false, "normalized delta x=" + std::to_string(vec.x));
+		Utils::log(false, "normalized delta y=" + std::to_string(vec.y));
+		Utils::log(false, "normalized center(surf)=" + std::to_string(vec.center));
+
 		Mat img_maches;
 		drawMatches(image1, keypoints1, image2, keypoints2, matches, img_maches);
 		Mat dst; double scale = 0.5;

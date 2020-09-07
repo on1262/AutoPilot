@@ -1,35 +1,64 @@
 #include "ViewImage.h"
+using namespace autopilot;
 
 
-ViewImage * ViewImage::create(int _ID, ImageStatus _status, QPoint _pos)
+ViewImage * ViewImage::createFromFile(QString _path, int _ID)
 {
 	ViewImage* vi = new ViewImage();
 	vi->setID(_ID);
-	vi->setStatus(_status);
-	vi->setPos(_pos);
-	return nullptr;
+	return vi;
 }
 
-int ViewImage::getID()
+ViewImage * autopilot::ViewImage::createFromMat(int _ID, cv::Mat _img)
+{
+	ViewImage* vi = new ViewImage();
+	vi->setID(_ID);
+	vi->image = _img;
+	return vi;
+}
+
+void autopilot::ViewImage::setImage(cv::Mat img)
+{
+}
+
+cv::Mat autopilot::ViewImage::getImage()
+{
+	return cv::Mat();
+}
+
+void autopilot::ViewImage::showImage()
+{
+}
+
+int autopilot::ViewImage::getID()
 {
 	return 0;
 }
 
-void ViewImage::setID(int _ID)
+void autopilot::ViewImage::setID(int _ID)
 {
-	this->ID = _ID;
 }
 
-QPoint ViewImage::getPosition()
+QPoint autopilot::ViewImage::getPosition()
 {
-	return pos;
+	return QPoint();
 }
 
-void ViewImage::setPosition(QPoint pos)
+void autopilot::ViewImage::setPosition(QPoint pos)
 {
-	this->pos = pos;
-	this->setPos(pos);
 }
+
+void autopilot::ViewImage::setRotation(float rotation)
+{
+	this->rotation = rotation;
+}
+
+viewVector autopilot::ViewImage::compare(ViewImage img2)
+{
+	return viewVector();
+}
+
+
 
 void ViewImage::setStatus(ImageStatus sta)
 {
@@ -50,13 +79,13 @@ void ViewImage::setStatus(ImageStatus sta)
 	}
 }
 
-ImageStatus ViewImage::getStatus()
+ImageStatus autopilot::ViewImage::getStatus()
 {
 	return ImageStatus();
 }
 
-void ViewImage::mousePressEvent(QGraphicsSceneMouseEvent * event)
+void autopilot::ViewImage::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-	//œ‘ æÕº∆¨
-
 }
+
+

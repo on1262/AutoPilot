@@ -9,6 +9,7 @@ ViewPathStep::ViewPathStep(ViewPathStep* lastStep, ViewPoint _direction)
 	this->setVisible(false);
 	this->vec = _direction;
 	this->length = 0;
+	this->stepStatus = rotating; //旋转只能在最开始的时候进行
 }
 
 float ViewPathStep::getLength()
@@ -42,6 +43,16 @@ void ViewPath::addStep()
 	//flush()
 }
 
+void ViewPath::setNowStepRotation(float rotationDeg)
+{
+	nowStep->vec.setRotationDeg(rotationDeg);
+}
+
+void ViewPath::setNowStepLength(float length)
+{
+	nowStep->length = length;
+}
+/*
 void ViewPath::addRotation(float rotationDeg)
 {
 	ViewPoint vec1 = nowStep->vec;
@@ -58,7 +69,6 @@ void ViewPath::addRotation(float rotationDeg)
 	vec1.setRotationDeg(theta);
 	nowStep->vec.x = vec1.x * length;
 	nowStep->vec.y = vec1.y * length;
-	//flush();
 }
 
 void ViewPath::addLength(float length)
@@ -67,31 +77,37 @@ void ViewPath::addLength(float length)
 	k = (k + length) / k;
 	nowStep->vec.x *= k;
 	nowStep->vec.y *= k;
-	//flush();
 }
-
-void ViewPath::pathEnd()
+*/
+void ViewPath::pathEnd(int endID)
 {
+	this->endID = endID;
 	nowStep->next = nullptr;
 	pEnd = nowStep->vec;
 	pStart = startStep->vec;
 }
 
-void ViewPath::flush(float nowStepRotation,float nowStepLength)
+void ViewPath::flush()
 {
 	nowStep->flush();
 }
 
 
 
-ViewPath::ViewPath(ViewPoint start, ViewPoint direction)
+ViewPath::ViewPath(ViewPoint start,int startID,ViewPoint direction)
 {
+	this->startID = startID;
 	pStart = start;
 	if (Utils::floatEqual(direction.x * direction.x + direction.y * direction.y, 1.0f) == false) {
 		Utils::log(true, "ViewPath: illegal direction vector.");
 	}
 	startStep = new ViewPathStep(nullptr,direction);
 	nowStep = startStep;
+}
+
+ViewPath * ViewPath::getReversePath()
+{
+	return nullptr;
 }
 
 float ViewPoint::getLength()

@@ -36,17 +36,17 @@
         <x>0</x>
         <y>51</y>
         <width>841</width>
-        <height>751</height>
+        <height>741</height>
        </rect>
       </property>
       <property name="dragMode">
        <enum>QGraphicsView::ScrollHandDrag</enum>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="ButtonSetNavigationPoint">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>110</x>
         <y>10</y>
         <width>93</width>
         <height>31</height>
@@ -55,8 +55,14 @@
       <property name="text">
        <string>设置目标点</string>
       </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="ButtonStartNavigation">
       <property name="geometry">
        <rect>
         <x>430</x>
@@ -69,25 +75,12 @@
        <string>开始自动导航</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QLineEdit" name="EditNavigationID">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>320</x>
         <y>10</y>
         <width>101</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>设置导航路径</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>10</y>
-        <width>201</width>
         <height>31</height>
        </rect>
       </property>
@@ -105,7 +98,7 @@
        <string>状态：</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_7">
+     <widget class="QLabel" name="LabelNavigationStatus">
       <property name="geometry">
        <rect>
         <x>590</x>
@@ -115,7 +108,33 @@
        </rect>
       </property>
       <property name="text">
-       <string>TextLabel</string>
+       <string>未开启导航</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>211</x>
+        <y>14</y>
+        <width>111</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>目标导航点ID：</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ButtonSwitchMode">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>93</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>开始绘制</string>
       </property>
      </widget>
     </widget>
@@ -708,9 +727,9 @@
    <widget class="QPushButton" name="ButtonStartVideoTransportation">
     <property name="geometry">
      <rect>
-      <x>840</x>
-      <y>20</y>
-      <width>381</width>
+      <x>1110</x>
+      <y>40</y>
+      <width>111</width>
       <height>31</height>
      </rect>
     </property>
@@ -751,7 +770,7 @@
     <property name="title">
      <string>调试输出</string>
     </property>
-    <widget class="QTextBrowser" name="textBrowser">
+    <widget class="QTextBrowser" name="BrowserDebug">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -932,13 +951,39 @@
     <property name="geometry">
      <rect>
       <x>840</x>
-      <y>70</y>
+      <y>80</y>
       <width>381</width>
       <height>201</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="EditCameraIP">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>40</y>
+      <width>261</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>192.168.137.11</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_18">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>20</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>摄像头IP地址</string>
     </property>
    </widget>
   </widget>
