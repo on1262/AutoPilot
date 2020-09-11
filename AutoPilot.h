@@ -35,8 +35,7 @@ public:
 	void flushView();
 	//À¶ÑÀ´®¿Ú
 	std::string textStr;
-	bool isControllingStart = false;
-	void serialTextUpdate();
+	void bufferUpdate();
 	void startControl();
 	void sendDataToArduino();
 	//Í¼Ïñ´«Êä

@@ -17,7 +17,7 @@ namespace autopilot {
 		QString path = Utils::getCacheFolder();
 		int ID;
 		float rotation;
-		QPoint pos;
+		QPointF pos;
 		ImageStatus status;
 		cv::Mat image;
 	public:
@@ -31,12 +31,12 @@ namespace autopilot {
 		int getID();
 		void setID(int _ID);
 		//路径信息（指显示在地图上的位置）
-		QPoint getPosition();
-		void setPosition(QPoint pos);
+		QPointF getPosition();
+		void setPosition(QPointF pos);
 		//旋转信息（方向）
 		void setRotation(float rotation);
 		//比对
-		viewVector compare(ViewImage img2);
+		ViewVector compare(ViewImage img2);
 		//状态
 		void setStatus(ImageStatus sta);
 		ImageStatus getStatus();

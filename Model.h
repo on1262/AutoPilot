@@ -14,22 +14,13 @@
 #include "RobustMatcher.h"
 #include "viewVector.h"
 #include "qlabel.h"
+#include "carState.h"
+#include "ViewNode.h"
 namespace autopilot {
 
-	struct carState {
-		enum state {
-			forward, backward, turnLeft, turnRight, stopped, shutdown, unDetected
-		};
-
-		state s = unDetected;
-		ViewPoint pos; //小车现实坐标
-		float direction = 0; //原先的方向
-		float nowRotation = 0; //中间量,增量
-		float nowLength = 0;
-		float exceptedRotation = 0; //最终量，增量
-		float exceptedLength = 0;
-	};
-
+	/****************项目说明*****************/
+	//Zorder:
+	//car=2, textItem=3,point(标识点)=1.5,path=1
 	class Model
 	{
 	public:
@@ -76,7 +67,7 @@ namespace autopilot {
 		int compressedWidth = 300; //压缩后图片宽度
 		int compressedHeight = 400; //压缩后图片高度
 		bool isTranslateToBW = false;//是否压缩成灰度图
-		viewVector SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath);
+		ViewVector SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath);
 		void SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles);
 		void SURFTest();
 
@@ -88,21 +79,25 @@ namespace autopilot {
 
 		/*轨迹显示与自动导航*/
 		QLabel* labelNavigationStatus;
-		double real2ViewCoef = 20; //现实中1cm对应多少像素，这里取20就是对应20像素。
+		
 		carState state; //小车当前状态
 		ViewItemCar* car;
 		QVector<ViewImage*> images;
 		ViewImage*  addViewImageFromNowPos(); //根据当前位置得到一张图片
 		void cmdFinished(bool isStoppedByError); //接收到E指令后
+		QPointF real2ScreenPos(QPointF realp); //从现实坐标转换虚拟坐标
 		void flushCarViewPosition(bool isFlushPos); //根据state刷新
 		void flushCarViewRotation(bool isFlushDirection);
 
+		QVector<ViewNode*> nodes; //所有路径点的集合
 		QVector<ViewPath*> paths; //所有路径的集合
 		ViewPath* nowPath;
-		bool isOnNavigationPoint = false; //是否在点上
+		int closestNodeID = -1;//最近的节点，-1代表所有节点都在距离外
 		bool isNowDrawingPath = false; //是否在绘制路径
+		bool isNowNavigating = false; //是否在自动导航状态
 		bool isLoadTestMapWhenStart = false; //是否在最初的时候打开测试地图
-		void setNavigationNode(); //设置导航点
+		void updateClosestNodeID();
+		void addNavigationNode(); //设置导航点
 		void startAutoNavigation(int pointID);
 		/**
 		 * 坐标说明
@@ -111,7 +106,6 @@ namespace autopilot {
 		 * 默认情况下小车现实坐标原点与画布中心重合
 		**/
 		void ViewInit(QWidget* window); //初始化UI界面
-		
 		QGraphicsView* pView;
 		Model(QGraphicsView* view, QLabel* labelNavigationStatus,QWidget* window);
 	};

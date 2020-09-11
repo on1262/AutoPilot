@@ -103,13 +103,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="carState.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="RobustMatcher.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="ViewImage.cpp" />
     <ClCompile Include="ViewItemCar.cpp" />
+    <ClCompile Include="ViewNode.cpp" />
     <ClCompile Include="ViewPath.cpp" />
+    <ClCompile Include="ViewPoint.cpp" />
     <QtRcc Include="AutoPilot.qrc" />
     <QtUic Include="AutoPilot.ui" />
     <QtMoc Include="AutoPilot.h" />
@@ -117,14 +120,17 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="carState.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="RobustMatcher.h" />
     <ClInclude Include="SerialPort.hpp" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="ViewImage.h" />
     <ClInclude Include="ViewItemCar.h" />
+    <ClInclude Include="ViewNode.h" />
     <ClInclude Include="ViewPath.h" />
-    <ClInclude Include="viewVector.h" />
+    <ClInclude Include="ViewPoint.h" />
+    <ClInclude Include="ViewVector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoPilot.pro" />

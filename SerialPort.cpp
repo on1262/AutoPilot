@@ -7,7 +7,7 @@
 
 #include "SerialPort.hpp"
 
-SerialPort::SerialPort(const char *portName)
+SerialPort::SerialPort(const char *portName, int baudRate)
 {
     this->connected = false;
 
@@ -39,7 +39,7 @@ SerialPort::SerialPort(const char *portName)
         }
         else
         {
-            dcbSerialParameters.BaudRate = CBR_9600;
+            dcbSerialParameters.BaudRate = baudRate;
             dcbSerialParameters.ByteSize = 8;
             dcbSerialParameters.StopBits = ONESTOPBIT;
             dcbSerialParameters.Parity = NOPARITY;

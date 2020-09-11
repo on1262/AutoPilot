@@ -172,7 +172,7 @@ cv::Mat RobustMatcher::ransacTest(const std::vector<cv::DMatch>& matches, const 
 	return fundemental;
 }
 
-viewVector RobustMatcher::match(std::string leftFilePath, std::string rightFilePath, std::vector<cv::DMatch>& matches, std::vector<cv::KeyPoint>& keypoints1, std::vector<cv::KeyPoint>& keypoints2) {
+ViewVector RobustMatcher::match(std::string leftFilePath, std::string rightFilePath, std::vector<cv::DMatch>& matches, std::vector<cv::KeyPoint>& keypoints1, std::vector<cv::KeyPoint>& keypoints2) {
 	cv::Mat image1, image2;
 	cv::Mat descriptors1, descriptors2;
 	// 1a. Detection of the SURF features
@@ -210,7 +210,7 @@ viewVector RobustMatcher::match(std::string leftFilePath, std::string rightFileP
 
 	if (match_judge == true)
 	{
-		size_t matchesSize = matches.size(); viewVector vec{ 0,0,0 };
+		size_t matchesSize = matches.size(); ViewVector vec{ 0,0,0 };
 		for (auto i = matches.begin(); i != matches.end(); i++) {
 			//归一化并转换到中心坐标系, x大于0代表R相对于L相机向右移动，同理y是向上移动
 			//center为正代表R相对于L放大，反之是缩小
@@ -237,7 +237,7 @@ viewVector RobustMatcher::match(std::string leftFilePath, std::string rightFileP
 	}
 	else
 	{
-		return viewVector{ -255,-255,-255 };
+		return ViewVector{ -255,-255,-255 };
 		//Model a;
 		//a.SURF(0.12, rightFilePath, leftFilePath);
 	}

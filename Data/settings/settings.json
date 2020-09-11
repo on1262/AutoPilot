@@ -16,8 +16,8 @@
         "TranslateToBW": false
     },
     "CarBlueTooth": {
-        "BaudRate": 9600,
-        "COM": 6
+        "BaudRate": 115200,
+        "COM": 4
     },
     "CarControl": {
         "MoveSpeed": 10,

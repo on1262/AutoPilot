@@ -4,6 +4,6 @@
 class ViewItemCar : public QGraphicsPixmapItem
 {
 public:
-	void init(QPoint pos);
+	void init(QPointF pos);
 };
 

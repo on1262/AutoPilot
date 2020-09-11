@@ -62,6 +62,15 @@
     <ClCompile Include="RobustMatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="carState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
@@ -85,7 +94,16 @@
     <ClInclude Include="RobustMatcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="viewVector.h">
+    <ClInclude Include="carState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

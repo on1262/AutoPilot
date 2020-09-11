@@ -39,12 +39,12 @@ void autopilot::ViewImage::setID(int _ID)
 {
 }
 
-QPoint autopilot::ViewImage::getPosition()
+QPointF autopilot::ViewImage::getPosition()
 {
-	return QPoint();
+	return QPointF();
 }
 
-void autopilot::ViewImage::setPosition(QPoint pos)
+void autopilot::ViewImage::setPosition(QPointF pos)
 {
 }
 
@@ -53,9 +53,9 @@ void autopilot::ViewImage::setRotation(float rotation)
 	this->rotation = rotation;
 }
 
-viewVector autopilot::ViewImage::compare(ViewImage img2)
+ViewVector autopilot::ViewImage::compare(ViewImage img2)
 {
-	return viewVector();
+	return ViewVector();
 }
 
 
