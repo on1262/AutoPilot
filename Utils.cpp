@@ -48,14 +48,10 @@ void Utils::setDebugBrowser(QTextBrowser * browser)
 	Utils::debugBrowser = browser;
 }
 
-void Utils::logCommands(QVector<QString>* cmds)
+void Utils::logCommands(QVector<QString> cmds)
 {
-	if (cmds == nullptr) {
-		log(true, "logCommands: nullptr.");
-		return;
-	}
 	log(false, "==Commands==");
-	for (auto i = cmds->begin(); i != cmds->end(); i++) {
+	for (auto i = cmds.begin(); i != cmds.end(); i++) {
 		log(false, i->toStdString());
 	}
 	log(false, "====End====");

@@ -24,7 +24,7 @@ public:
 	//debug
 	static QTextBrowser* debugBrowser;
 	static void setDebugBrowser(QTextBrowser* browser);
-	static void logCommands(QVector<QString>* cmds); //打印命令组
+	static void logCommands(QVector<QString> cmds); //打印命令组
 	//宏定义
 	static double real2ViewCoef; //现实中1cm对应多少像素，这里取20就是对应20像素。
 	//工具

@@ -146,7 +146,7 @@ ViewPath * ViewPath::getReversePath()
 	return nullptr;
 }
 
-QVector<QString>* autopilot::ViewPath::getCommands(ViewPoint realPos, float rotation)
+QVector<QString> autopilot::ViewPath::getCommands(ViewPoint realPos, float rotation)
 {
 	if (this->startStep == nullptr || this->endStep == nullptr) {
 		Utils::log(true, "ViewPath getCommands can't be used by unFinished ViewPath.");
@@ -175,13 +175,13 @@ QVector<QString>* autopilot::ViewPath::getCommands(ViewPoint realPos, float rota
 	for (auto i = vec->begin(); i != vec->end(); i++) {
 		if (i->isEmpty() == true) vec->erase(i);
 	}
-	return vec;
+	return *vec;
 }
 
 QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd)
 {
 	QString str;
-	int thetaDelta = rotationEnd - rotationStart;
+	int thetaDelta =  rotationEnd - rotationStart;
 	if (thetaDelta == 0) {
 		//如果没有旋转或差异可以忽略不计
 		return str;
@@ -193,6 +193,7 @@ QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd
 		if (deltaAbs == 0) return str;
 		//将外角旋转改成内角旋转
 		if (thetaDelta > 0) {
+			/**/
 			if (deltaAbs >= 180) {
 				str += "L0";
 				deltaAbs = 360 - deltaAbs;

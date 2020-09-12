@@ -105,6 +105,7 @@
   <ItemGroup>
     <ClCompile Include="carState.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="NavigationController.cpp" />
     <ClCompile Include="RobustMatcher.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -122,6 +123,7 @@
   <ItemGroup>
     <ClInclude Include="carState.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="NavigationController.h" />
     <ClInclude Include="RobustMatcher.h" />
     <ClInclude Include="SerialPort.hpp" />
     <ClInclude Include="Utils.h" />
@@ -134,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoPilot.pro" />
+    <None Include="ClassDiagram.cd" />
     <None Include="encoding.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

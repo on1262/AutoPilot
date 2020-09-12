@@ -71,6 +71,9 @@
     <ClCompile Include="ViewNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NavigationController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
@@ -106,9 +109,13 @@
     <ClInclude Include="ViewNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NavigationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoPilot.pro" />
     <None Include="encoding.py" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

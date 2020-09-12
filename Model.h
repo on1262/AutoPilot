@@ -16,6 +16,7 @@
 #include "qlabel.h"
 #include "carState.h"
 #include "ViewNode.h"
+#include "NavigationController.h"
 namespace autopilot {
 
 	/****************项目说明*****************/
@@ -28,10 +29,10 @@ namespace autopilot {
 		float rotateAngle = 360.0; //单位旋转角度
 		float moveSpeed = 10.0; //前进后退速度
 		QTimer *flushTimer;
-		void carMoveForward(bool flag);
-		void carMoveBackward(bool flag);
-		void carTurnLeft(bool flag);
-		void carTurnRight(bool flag);
+		void carMoveForward(bool flag, QString cmd);
+		void carMoveBackward(bool flag, QString cmd);
+		void carTurnLeft(bool flag, QString cmd);
+		void carTurnRight(bool flag, QString cmd);
 		void setFlushTimer();
 		void flushView();
 
@@ -54,7 +55,7 @@ namespace autopilot {
 		int CmdsCount = 0; //接收到的指令数量
 		void readBuffer(QString str);
 		void serialWrite(std::string str);
-		void readArduinoCmd(QString str);
+		void readArduinoFeedBack(QString str);
 		bool isConnected();
 		/*图像识别*/
 		cv::Mat nowDisplayingImg;
@@ -77,9 +78,8 @@ namespace autopilot {
 		void writeSettings(); //将界面的内容保存到设置文件中
 		void setSettingPath(QString settingPath); //改变配置文件的路径
 
-		/*轨迹显示与自动导航*/
+		/*轨迹显示*/
 		QLabel* labelNavigationStatus;
-		
 		carState state; //小车当前状态
 		ViewItemCar* car;
 		QVector<ViewImage*> images;
@@ -88,15 +88,18 @@ namespace autopilot {
 		QPointF real2ScreenPos(QPointF realp); //从现实坐标转换虚拟坐标
 		void flushCarViewPosition(bool isFlushPos); //根据state刷新
 		void flushCarViewRotation(bool isFlushDirection);
-
 		QVector<ViewNode*> nodes; //所有路径点的集合
 		QVector<ViewPath*> paths; //所有路径的集合
 		ViewPath* nowPath;
-		int closestNodeID = -1;//最近的节点，-1代表所有节点都在距离外
 		bool isNowDrawingPath = false; //是否在绘制路径
-		bool isNowNavigating = false; //是否在自动导航状态
 		bool isLoadTestMapWhenStart = false; //是否在最初的时候打开测试地图
-		void updateClosestNodeID();
+
+		/*自动导航*/
+		NavigationController controller;
+		bool getNavigationState(); //前端穿透到controller
+		void sendCmd2Arduino(QString str);
+		int closestNodeID = -1;//最近的节点，-1代表所有节点都在距离外
+		void updateClosestNodeID(); //寻找最近起点
 		void addNavigationNode(); //设置导航点
 		void startAutoNavigation(int pointID);
 		/**
