@@ -114,8 +114,6 @@ void ViewPath::pathEnd(ViewPoint endPos, int endID)
 	this->endStep = nowStep;
 	nowStep->next = nullptr;
 	nowStep->nextRealPos = endPos;
-	rotationEnd = nowStep->rotationVec;
-	rotationStart = startStep->rotationVec;
 }
 
 void ViewPath::flush()
@@ -128,7 +126,6 @@ ViewPath::ViewPath(QPointF startScreenPos, ViewPoint startRealPos, int startID, 
 	this->scene = sc;
 	this->startID = startID;
 	this->endStep = nullptr;
-	rotationStart = direction;
 	if (Utils::floatEqual(direction.x * direction.x + direction.y * direction.y, 1.0f) == false) {
 		Utils::log(true, "ViewPath: illegal direction vector.");
 	}
@@ -141,9 +138,48 @@ ViewPath::ViewPath(QPointF startScreenPos, ViewPoint startRealPos, int startID, 
 	flush();
 }
 
-ViewPath * ViewPath::getReversePath()
+ViewPath * ViewPath::getReversePath(ViewPath* path) //将一个配置完成的ViewPath翻转得到反演路径
 {
-	return nullptr;
+	ViewPath* reversedPath = new ViewPath();
+	//初始化整体性的参数
+	reversedPath->scene = path->scene;
+	reversedPath->startID = path->endID;
+	reversedPath->endID = path->startID;
+	//从最后一步开始向前
+	ViewPathStep* step = path->endStep;
+	ViewPathStep* reversedStep = nullptr;
+	while (step != nullptr) {
+		ViewPoint reverseDirection = step->rotationVec;
+		//翻转180度
+		reverseDirection.x = -reverseDirection.x;
+		reverseDirection.y = -reverseDirection.y;
+		//添加到路径
+		if (step == path->startStep) { //最后执行
+
+			reversedStep = new ViewPathStep(reversedStep, reverseDirection); //链接自身last
+			reversedStep->last->next = reversedStep; //链接上一个next
+			reversedStep->next = nullptr; //链接自身next
+			reversedPath->endStep = reversedStep;
+		} else if (step == path->endStep) { //一开始执行
+			reversedStep = new ViewPathStep(nullptr, reverseDirection); //链接自身last
+			reversedPath->startStep = reversedStep;
+		}
+		else { //中间执行
+			reversedStep = new ViewPathStep(reversedStep, reverseDirection); //链接自身last
+			reversedStep->last->next = reversedStep; //链接上一个next
+		}
+
+		reversedStep->stepStatus = ViewPathStep::expanding;
+		//添加长度
+		reversedStep->updatedLength = step->getLength();
+		//进行前后的对接,注意这里对接不能对step的last和next，因为它们的方向是正的
+		reversedStep->lastRealPos = step->nextRealPos;
+		reversedStep->nextRealPos = step->lastRealPos;
+
+		//step向前更新
+		step = step->last;
+	}
+	return reversedPath;
 }
 
 QVector<QString> autopilot::ViewPath::getCommands(ViewPoint realPos, float rotation)
@@ -193,7 +229,6 @@ QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd
 		if (deltaAbs == 0) return str;
 		//将外角旋转改成内角旋转
 		if (thetaDelta > 0) {
-			/**/
 			if (deltaAbs >= 180) {
 				str += "L0";
 				deltaAbs = 360 - deltaAbs;

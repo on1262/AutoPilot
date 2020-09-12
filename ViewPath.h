@@ -30,7 +30,6 @@ namespace autopilot {
 	{
 	public:
 		enum detectMethod { onlyStart, onlyEnd, both, none };
-		ViewPoint rotationStart, rotationEnd; //首尾位置
 		int startID, endID; //首尾ID
 		ViewPathStep* startStep;
 		ViewPathStep* nowStep;
@@ -43,7 +42,8 @@ namespace autopilot {
 		void pathEnd(ViewPoint endRealPos, int endID); //结束路径
 		void flush(); //绘制点刷新
 		ViewPath(QPointF startScreenPos,ViewPoint startRealPos, int startID, ViewPoint direction, QGraphicsScene* sc);
-		static ViewPath* getReversePath(); //获取反演路径
+		ViewPath() {}; //给反演路径提供的构造函数
+		static ViewPath* getReversePath(ViewPath* path); //获取反演路径
 		QVector<QString> getCommands(ViewPoint realPos,float rotationBeforeStart); //根据路径获取执行命令列表
 		QString getRotateCmd(float rotationStart, float rotationEnd); //从start转向到end的命令
 		QString getMoveCmd(ViewPoint pStartReal, ViewPoint pEndReal, char mode);
