@@ -22,7 +22,7 @@ namespace autopilot {
 
 	/****************项目说明*****************/
 	//Zorder:
-	//car=2, textItem=3,point(标识点)=1.5,path=1
+	//car=2, textItem=3,point(标识点)=1.5,cachePath=1
 	class Model
 	{
 	public:
@@ -69,7 +69,9 @@ namespace autopilot {
 		int compressedWidth = 300; //压缩后图片宽度
 		int compressedHeight = 400; //压缩后图片高度
 		bool isTranslateToBW = false;//是否压缩成灰度图
-		ViewVector SURF(float matchThreshold, std::string leftFilePath, std::string rightFilePath);
+		ViewVector rotateAndCompareImage(int nodeID, float carDirection); //将当前图片和固定node的图片比较
+		ViewImage*  addViewImageFromNowNode(int nodeID, float rotation); //根据当前位置得到一张图片
+		ViewVector SURF(float matchThreshold, cv::Mat leftImg , cv::Mat rightImg);
 		void SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles);
 		void SURFTest();
 
@@ -84,7 +86,7 @@ namespace autopilot {
 		carState state; //小车当前状态
 		ViewItemCar* car;
 		QVector<ViewImage*> images;
-		ViewImage*  addViewImageFromNowPos(); //根据当前位置得到一张图片
+
 		void cmdFinished(bool isStoppedByError); //接收到E指令后
 		QPointF real2ScreenPos(QPointF realp); //从现实坐标转换虚拟坐标
 		void flushCarViewPosition(bool isFlushPos); //根据state刷新

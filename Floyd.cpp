@@ -126,7 +126,7 @@ void Floyd::sortEdges(EData* edges, int elen)
  * 即，统计图中各个顶点间的最短路径。
  *
  * 参数说明：
- *     path -- 路径。path[i][j]=k表示，"顶点i"到"顶点j"的最短路径会经过顶点k。
+ *     cachePath -- 路径。cachePath[i][j]=k表示，"顶点i"到"顶点j"的最短路径会经过顶点k。
  *     dist -- 长度数组。即，dist[i][j]=sum表示，"顶点i"到"顶点j"的最短路径的长度是sum。
  */
 void Floyd::init()
@@ -151,7 +151,7 @@ void Floyd::init()
 		{
 			for (j = 0; j < mVexNum; j++)
 			{
-				// 如果经过下标为k顶点路径比原两点间路径更短，则更新dist[i][j]和path[i][j]
+				// 如果经过下标为k顶点路径比原两点间路径更短，则更新dist[i][j]和cachePath[i][j]
 				tmp = (distMat->get(i,k) == FLOYD_INF || distMat->get(k,j) == FLOYD_INF) ? FLOYD_INF : (distMat->get(i, k) + distMat->get(k, j));
 				if (distMat->get(i, j) > tmp)
 				{

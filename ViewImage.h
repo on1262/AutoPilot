@@ -1,7 +1,8 @@
 #pragma once
 #include "qgraphicsitem.h"
 #include "Utils.h"
-#include "viewVector.h"
+#include "ViewVector.h"
+#include "ViewPoint.h"
 #include <opencv2/opencv.hpp>
 namespace autopilot {
 	/*一幅存储在地图上的图像*/
@@ -14,29 +15,25 @@ namespace autopilot {
 	class ViewImage : public QGraphicsPixmapItem
 	{
 	private:
-		QString path = Utils::getCacheFolder();
-		int ID;
-		float rotation;
-		QPointF pos;
+		QString saveFileName;
 		ImageStatus status;
 		cv::Mat image;
 	public:
+		int imageID;
+		int nodeID;
+		float rotation;
+		ViewPoint realPos;
+		//创建
 		static ViewImage* createFromFile(QString _path, int _ID); //从文件中创建
 		static ViewImage* createFromMat(int _ID, cv::Mat _img); //从内存的图像中创建
+		//保存
+		QString saveAsCache(); //存储在cache里
 		//图片相关
 		void setImage(cv::Mat img); //更改图片
 		cv::Mat getImage(); //获取图片
 		void showImage(); //展示图片
-		//图片文件
-		int getID();
-		void setID(int _ID);
-		//路径信息（指显示在地图上的位置）
-		QPointF getPosition();
-		void setPosition(QPointF pos);
-		//旋转信息（方向）
-		void setRotation(float rotation);
-		//比对
-		ViewVector compare(ViewImage img2);
+		//设置
+		void init(int imageID, int nodeID,float rotation);
 		//状态
 		void setStatus(ImageStatus sta);
 		ImageStatus getStatus();

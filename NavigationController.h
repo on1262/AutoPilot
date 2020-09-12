@@ -3,8 +3,8 @@
 #include "ViewPath.h"
 
 /*一次导航的控制器
- *从起点到终点，经过一个或多个path
- *每次导航需要给定path列表和当前位置方向，外部在执行E0时调用下一步
+ *从起点到终点，经过一个或多个cachePath
+ *每次导航需要给定cachePath列表和当前位置方向，外部在执行E0时调用下一步
  */
 
 namespace autopilot {

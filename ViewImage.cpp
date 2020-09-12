@@ -17,6 +17,15 @@ ViewImage * autopilot::ViewImage::createFromMat(int _ID, cv::Mat _img)
 	return vi;
 }
 
+QString autopilot::ViewImage::saveAsCache()
+{
+	saveFileName = QString::number(Utils::getNewID()) + ".jpg";
+	if (cv::imwrite((Utils::getCacheFolder() + saveFileName).toStdString(), image) == true) {
+		return saveFileName;
+	}
+	return QString();
+}
+
 void autopilot::ViewImage::setImage(cv::Mat img)
 {
 }
@@ -30,33 +39,14 @@ void autopilot::ViewImage::showImage()
 {
 }
 
-int autopilot::ViewImage::getID()
+void autopilot::ViewImage::init(int imageID, int nodeID, float rotation)
 {
-	return 0;
-}
-
-void autopilot::ViewImage::setID(int _ID)
-{
-}
-
-QPointF autopilot::ViewImage::getPosition()
-{
-	return QPointF();
-}
-
-void autopilot::ViewImage::setPosition(QPointF pos)
-{
-}
-
-void autopilot::ViewImage::setRotation(float rotation)
-{
+	this->imageID = imageID;
+	this->nodeID = nodeID;
 	this->rotation = rotation;
 }
 
-ViewVector autopilot::ViewImage::compare(ViewImage img2)
-{
-	return ViewVector();
-}
+
 
 
 
@@ -66,13 +56,13 @@ void ViewImage::setStatus(ImageStatus sta)
 	switch (sta)
 	{
 	case OutOfRange:
-		this->setPixmap(QPixmap(path + "photoPosGrey.png"));
+		this->setPixmap(QPixmap(cachePath + "photoPosGrey.png"));
 		break;
 	case Detected:
-		this->setPixmap(QPixmap(path + "photoPosBlue.png"));
+		this->setPixmap(QPixmap(cachePath + "photoPosBlue.png"));
 		break;
 	case ErrorPos:
-		this->setPixmap(QPixmap(path + "photoPosRed.png"));
+		this->setPixmap(QPixmap(cachePath + "photoPosRed.png"));
 		break;
 	default:
 		break;

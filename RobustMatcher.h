@@ -66,9 +66,7 @@ public:
 		const std::vector<cv::KeyPoint>& keypoints2,
 		std::vector<cv::DMatch>& outMatches);
 
-	autopilot::ViewVector match(std::string leftFilePath, std::string rightFilePath, // input images
+	autopilot::ViewVector match(cv::Mat leftImg, cv::Mat rightImg, // input images
 		std::vector<cv::DMatch>& matches, // output matches and keypoints
 		std::vector<cv::KeyPoint>& keypoints1, std::vector<cv::KeyPoint>& keypoints2);
 };
-//因为要用到ViewVector vec{ 0,0,0 }和surf函数所以加了#include "Model.h"等
-//经测试，没有缩放的两图center为+-0.02,缩放的图center在0.18以上

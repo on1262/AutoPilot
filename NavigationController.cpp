@@ -31,6 +31,7 @@ void autopilot::NavigationController::newRoute(QVector<ViewPath*> route, ViewPoi
 		cmds = (*i)->getCommands((*(i - 1))->endStep->nextRealPos, (*(i - 1))->endStep->rotationVec.getRotationDeg());
 		cmdList = cmdList + cmds;
 	}
+	cmdList.append(QString("ImageCompare"));
 	Utils::logCommands(cmdList); //debug
 }
 

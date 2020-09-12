@@ -172,19 +172,16 @@ cv::Mat RobustMatcher::ransacTest(const std::vector<cv::DMatch>& matches, const 
 	return fundemental;
 }
 
-ViewVector RobustMatcher::match(std::string leftFilePath, std::string rightFilePath, std::vector<cv::DMatch>& matches, std::vector<cv::KeyPoint>& keypoints1, std::vector<cv::KeyPoint>& keypoints2) {
-	cv::Mat image1, image2;
+
+autopilot::ViewVector RobustMatcher::match(cv::Mat leftImg, cv::Mat rightImg, std::vector<cv::DMatch>& matches, std::vector<cv::KeyPoint>& keypoints1, std::vector<cv::KeyPoint>& keypoints2)
+{
 	cv::Mat descriptors1, descriptors2;
 	// 1a. Detection of the SURF features
 	clock_t start = clock();
-	/*detector->detect(image1,keypoints1);
-	detector->detect(image2,keypoints2);*/
-	cv::Mat img1 = cv::imread(leftFilePath);
-	cv::Mat img2 = cv::imread(rightFilePath);
-	resize(img1, image1, Size(380, 507));
-	resize(img2, image2, Size(380, 507));
-	detector->detectAndCompute(image1, Mat(), keypoints1, descriptors1);
-	detector->detectAndCompute(image2, Mat(), keypoints2, descriptors2);
+	/*detector->detect(leftImg,keypoints1);
+	detector->detect(rightImg,keypoints2);*/
+	detector->detectAndCompute(leftImg, Mat(), keypoints1, descriptors1);
+	detector->detectAndCompute(rightImg, Mat(), keypoints2, descriptors2);
 	clock_t end = clock();
 	// 2. Match the two image descriptors
 	cv::BFMatcher matcher;
@@ -215,8 +212,8 @@ ViewVector RobustMatcher::match(std::string leftFilePath, std::string rightFileP
 			//归一化并转换到中心坐标系, x大于0代表R相对于L相机向右移动，同理y是向上移动
 			//center为正代表R相对于L放大，反之是缩小
 			//相机移动方向和物体移动方向相反
-			cv::Point2f p1{ keypoints1[i->queryIdx].pt.x / image1.cols - 0.5f, keypoints1[i->queryIdx].pt.y / image1.rows - 0.5f };
-			cv::Point2f p2{ keypoints2[i->trainIdx].pt.x / image2.cols - 0.5f, keypoints2[i->trainIdx].pt.y / image2.rows - 0.5f };
+			cv::Point2f p1{ keypoints1[i->queryIdx].pt.x / leftImg.cols - 0.5f, keypoints1[i->queryIdx].pt.y / leftImg.rows - 0.5f };
+			cv::Point2f p2{ keypoints2[i->trainIdx].pt.x / rightImg.cols - 0.5f, keypoints2[i->trainIdx].pt.y / rightImg.rows - 0.5f };
 			vec.x += p1.x - p2.x;
 			vec.y += p2.y - p1.y;
 			vec.center += ((p2 - p1).dot(p1) / sqrtf(p1.x * p1.x + p1.y * p1.y));
@@ -229,16 +226,15 @@ ViewVector RobustMatcher::match(std::string leftFilePath, std::string rightFileP
 		Utils::log(false, "normalized center(surf)=" + std::to_string(vec.center));
 
 		Mat img_maches;
-		drawMatches(image1, keypoints1, image2, keypoints2, matches, img_maches);
+		drawMatches(leftImg, keypoints1, rightImg, keypoints2, matches, img_maches);
 		Mat dst; double scale = 0.5;
 		resize(img_maches, dst, Size(img_maches.cols*scale, img_maches.rows*scale));
-		imshow("匹配效果", dst);
+		imshow("RobustMatcher", dst);
 		return vec;
 	}
 	else
 	{
 		return ViewVector{ -255,-255,-255 };
-		//Model a;
-		//a.SURF(0.12, rightFilePath, leftFilePath);
 	}
+	
 }
