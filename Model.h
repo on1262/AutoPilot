@@ -17,6 +17,7 @@
 #include "carState.h"
 #include "ViewNode.h"
 #include "NavigationController.h"
+#include "Floyd.h"
 namespace autopilot {
 
 	/****************项目说明*****************/
@@ -99,9 +100,11 @@ namespace autopilot {
 		bool getNavigationState(); //前端穿透到controller
 		void sendCmd2Arduino(QString str);
 		int closestNodeID = -1;//最近的节点，-1代表所有节点都在距离外
+		int closestNodeIndex = -1;
 		void updateClosestNodeID(); //寻找最近起点
 		void addNavigationNode(); //设置导航点
 		void startAutoNavigation(int pointID);
+		void cancelNowPath(); //撤销当前走过的路径
 		/**
 		 * 坐标说明
 		 * 屏幕坐标和小车坐标是两套坐标，屏幕坐标以左上角为原点，单位长度对应一个像素

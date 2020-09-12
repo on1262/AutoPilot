@@ -43,7 +43,9 @@ namespace autopilot {
 		void flush(); //绘制点刷新
 		ViewPath(QPointF startScreenPos,ViewPoint startRealPos, int startID, ViewPoint direction, QGraphicsScene* sc);
 		ViewPath() {}; //给反演路径提供的构造函数
+		~ViewPath();
 		static ViewPath* getReversePath(ViewPath* path); //获取反演路径
+		static float getPathSumLength(ViewPath* path); //获取路径长度的和
 		QVector<QString> getCommands(ViewPoint realPos,float rotationBeforeStart); //根据路径获取执行命令列表
 		QString getRotateCmd(float rotationStart, float rotationEnd); //从start转向到end的命令
 		QString getMoveCmd(ViewPoint pStartReal, ViewPoint pEndReal, char mode);

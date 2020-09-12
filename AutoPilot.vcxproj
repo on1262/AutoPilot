@@ -104,6 +104,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="carState.cpp" />
+    <ClCompile Include="Floyd.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="NavigationController.cpp" />
     <ClCompile Include="RobustMatcher.cpp" />
@@ -111,6 +112,7 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="ViewImage.cpp" />
     <ClCompile Include="ViewItemCar.cpp" />
+    <ClCompile Include="ViewMatrix.cpp" />
     <ClCompile Include="ViewNode.cpp" />
     <ClCompile Include="ViewPath.cpp" />
     <ClCompile Include="ViewPoint.cpp" />
@@ -122,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="carState.h" />
+    <ClInclude Include="Floyd.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="NavigationController.h" />
     <ClInclude Include="RobustMatcher.h" />
@@ -129,6 +132,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="ViewImage.h" />
     <ClInclude Include="ViewItemCar.h" />
+    <ClInclude Include="ViewMatrix.h" />
     <ClInclude Include="ViewNode.h" />
     <ClInclude Include="ViewPath.h" />
     <ClInclude Include="ViewPoint.h" />

@@ -74,6 +74,12 @@
     <ClCompile Include="NavigationController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Floyd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
@@ -110,6 +116,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NavigationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Floyd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

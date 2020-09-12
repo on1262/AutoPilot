@@ -138,6 +138,17 @@ ViewPath::ViewPath(QPointF startScreenPos, ViewPoint startRealPos, int startID, 
 	flush();
 }
 
+autopilot::ViewPath::~ViewPath()
+{
+	auto step = this->startStep;
+	ViewPathStep* tmp;
+	while (step != nullptr) {
+		tmp = step->next;
+		delete step;
+		step = tmp;
+	}
+}
+
 ViewPath * ViewPath::getReversePath(ViewPath* path) //将一个配置完成的ViewPath翻转得到反演路径
 {
 	ViewPath* reversedPath = new ViewPath();
@@ -180,6 +191,17 @@ ViewPath * ViewPath::getReversePath(ViewPath* path) //将一个配置完成的ViewPath翻
 		step = step->last;
 	}
 	return reversedPath;
+}
+
+float autopilot::ViewPath::getPathSumLength(ViewPath * path)
+{
+	float length = 0;
+	ViewPathStep* step = path->startStep;
+	while (step != nullptr) {
+		length += abs(step->getLength());
+		step = step->next;
+	}
+	return length;
 }
 
 QVector<QString> autopilot::ViewPath::getCommands(ViewPoint realPos, float rotation)
