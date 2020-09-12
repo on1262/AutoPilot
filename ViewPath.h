@@ -36,17 +36,17 @@ namespace autopilot {
 		ViewPathStep* nowStep;
 		ViewPathStep* endStep; //结束
 		QGraphicsScene* scene;
-		void addStep(QPointF p); //添加一步
+		void addStep(QPointF newStepScreenPos, ViewPoint newStepRealPos); //添加一步
 		void setNowStepRotation(float rotationDeg); //添加向前的数据
 		void setNowStepLength(float length); //添加向后的数据
 		void updateNowStepLength();
-		void pathEnd(ViewPoint endPos, int endID); //结束路径
+		void pathEnd(ViewPoint endRealPos, int endID); //结束路径
 		void flush(); //绘制点刷新
-		ViewPath(QPointF startScreenPos,ViewPoint startPos, int startID, ViewPoint direction, QGraphicsScene* sc);
+		ViewPath(QPointF startScreenPos,ViewPoint startRealPos, int startID, ViewPoint direction, QGraphicsScene* sc);
 		static ViewPath* getReversePath(); //获取反演路径
 		QVector<QString>* getCommands(ViewPoint realPos,float rotationBeforeStart); //根据路径获取执行命令列表
 		QString getRotateCmd(float rotationStart, float rotationEnd); //从start转向到end的命令
-		QString getMoveCmd(ViewPoint pStart, ViewPoint pEnd, char mode);
+		QString getMoveCmd(ViewPoint pStartReal, ViewPoint pEndReal, char mode);
 	};
 }
 

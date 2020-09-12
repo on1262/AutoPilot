@@ -45,18 +45,18 @@ float ViewPathStep::getRotationDeg(ViewPathStep * lastStep, ViewPathStep * nextS
 	return lastStep->rotationVec.getRotationDeg() - nextStep->rotationVec.getRotationDeg();
 }
 
-void ViewPath::addStep(QPointF p)
+void ViewPath::addStep(QPointF newStepScreenPos, ViewPoint newStepRealPos)
 {
 	//当前的偏角是上一步的角度
 	ViewPathStep* step = new ViewPathStep(nowStep, nowStep->rotationVec);
 	//上一步
-	nowStep->nextRealPos = ViewPoint{ (float)p.x(), (float)p.y() };
+	nowStep->nextRealPos = newStepRealPos;
 	nowStep->next = step;
 	//下一步
 	nowStep = step;
-	step->lastRealPos = ViewPoint{ (float)p.x(), (float)p.y() };
+	step->lastRealPos = newStepRealPos;
 	//添加新步到屏幕上
-	step->setPos(QPointF(p.x() + 18, p.y() + 15));
+	step->setPos(QPointF(newStepScreenPos.x() + 18, newStepScreenPos.y() + 15));
 	step->setZValue(1.0f);
 	scene->addItem(step);
 
@@ -168,6 +168,7 @@ QVector<QString>* autopilot::ViewPath::getCommands(ViewPoint realPos, float rota
 		vec->push_back(getRotateCmd(nowRotation, step->rotationVec.getRotationDeg()));
 		//直行
 		vec->push_back(getMoveCmd(step->lastRealPos, step->nextRealPos, 'F'));
+		nowRotation = step->rotationVec.getRotationDeg();
 		step = step->next;
 	}
 	//剔除无效项
@@ -186,9 +187,31 @@ QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd
 		return str;
 	}
 	else {
-		if (thetaDelta > 0)	str += "R0";
-		else str += "L0";
 		int deltaAbs = abs(thetaDelta);
+		//矫正过度旋转
+		if (deltaAbs >= 360) deltaAbs -= 360;
+		if (deltaAbs == 0) return str;
+		//将外角旋转改成内角旋转
+		if (thetaDelta > 0) {
+			if (deltaAbs >= 180) {
+				str += "L0";
+				deltaAbs = 360 - deltaAbs;
+			}
+			else {
+				str += "R0";
+			}
+		}
+		else {
+			if (deltaAbs >= 180) {
+				str += "R0";
+				deltaAbs = 360 - deltaAbs;
+			}
+			else {
+				str += "L0";
+			}
+
+		}
+		//左起位补0
 		if (deltaAbs <= 99) {
 			str += "0";
 		}
@@ -204,7 +227,7 @@ QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd
 	}
 }
 
-QString autopilot::ViewPath::getMoveCmd(ViewPoint pStart, ViewPoint pEnd, char mode)
+QString autopilot::ViewPath::getMoveCmd(ViewPoint pStartReal, ViewPoint pEndReal, char mode)
 {
 	QString str;
 	if (mode == 'F' || mode == 'B') {
@@ -214,7 +237,7 @@ QString autopilot::ViewPath::getMoveCmd(ViewPoint pStart, ViewPoint pEnd, char m
 	else {
 		Utils::log(true, "getMoveCmd: Illegal direction");
 	}
-	int dist = abs(ViewPoint::getDirection(pStart, pEnd));
+	int dist = abs(ViewPoint::getDistance(pStartReal, pEndReal));
 	if (dist == 0) return QString(); //如果没有距离，则什么也不做
 	else {
 		if (dist <= 99) str += "0";
