@@ -110,6 +110,7 @@
     <ClCompile Include="RobustMatcher.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="ViewCapture.cpp" />
     <ClCompile Include="ViewImage.cpp" />
     <ClCompile Include="ViewItemCar.cpp" />
     <ClCompile Include="ViewMatrix.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="RobustMatcher.h" />
     <ClInclude Include="SerialPort.hpp" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="ViewCapture.h" />
     <ClInclude Include="ViewImage.h" />
     <ClInclude Include="ViewItemCar.h" />
     <ClInclude Include="ViewMatrix.h" />

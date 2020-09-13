@@ -18,6 +18,7 @@
 #include "ViewNode.h"
 #include "NavigationController.h"
 #include "Floyd.h"
+#include "ViewCapture.h"
 namespace autopilot {
 
 	/****************项目说明*****************/
@@ -59,8 +60,6 @@ namespace autopilot {
 		void readArduinoFeedBack(QString str);
 		bool isConnected();
 		/*图像识别*/
-		cv::Mat nowDisplayingImg;
-		bool isCamConnected = false;
 		RobustMatcher b;
 		int cameraSamplingFrequency = 10; //对视频流采样的频率
 		int compressedWidth = 300; //压缩后图片宽度

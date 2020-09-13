@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-
+#include "ViewCapture.h"
 class AutoPilot : public QMainWindow
 {
     Q_OBJECT
@@ -23,6 +23,9 @@ public:
 	void updateCV();
 	void updateBlueToothSerial();
 	void updateCarBlueTooth();
+	//图像传输
+	ViewCapture* capture;
+	void openCam();
 	//小车运动
 	bool flagForward = false;
 	bool flagBackward = false;
@@ -38,14 +41,7 @@ public:
 	void bufferUpdate();
 	void startControl();
 	void sendDataToArduino();
-	//图像传输
-	QTimer *timer; //图像刷新计时器
-	cv::VideoCapture cap;
-	QImage qt_image;
-	std::string IPAddress;
-	void AutoPilot::openCam();
-	void AutoPilot::closeCam();
-	void AutoPilot::camUpdate();
+
 	//导航和轨迹绘制
 	bool nowDrawingMode = false;
 	void switchDrawingMode();
