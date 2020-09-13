@@ -1,0 +1,89 @@
+{
+    "car": {
+        "direction": -38,
+        "realPos": [
+            49.27629089355469,
+            -16.622859954833984
+        ],
+        "screenPos": [
+            758.3814544677734,
+            300.8857002258301
+        ]
+    },
+    "images": [
+    ],
+    "nodes": [
+        {
+            "ID": 1,
+            "displayText": "ID=1 realPos=2,0\nrotation=0",
+            "realPos": [
+                2,
+                0
+            ],
+            "screenPos": [
+                522,
+                384
+            ]
+        },
+        {
+            "ID": 2,
+            "displayText": "ID=2 realPos=49,-16\nrotation=-38",
+            "realPos": [
+                49.27629089355469,
+                -16.622859954833984
+            ],
+            "screenPos": [
+                758.3814544677734,
+                300.8857002258301
+            ]
+        }
+    ],
+    "paths": [
+        {
+            "endID": 2,
+            "startID": 1,
+            "steps": [
+                {
+                    "lastRealPos": [
+                        2,
+                        0
+                    ],
+                    "length": 0,
+                    "nextRealPos": [
+                        28,
+                        0
+                    ],
+                    "rotationVec": [
+                        1,
+                        0
+                    ],
+                    "screenPos": [
+                        540,
+                        399
+                    ],
+                    "updatedLength": 26
+                },
+                {
+                    "lastRealPos": [
+                        28,
+                        0
+                    ],
+                    "length": 0,
+                    "nextRealPos": [
+                        49.27629089355469,
+                        -16.622859954833984
+                    ],
+                    "rotationVec": [
+                        0.7880107760429382,
+                        -0.6156615018844604
+                    ],
+                    "screenPos": [
+                        670,
+                        399
+                    ],
+                    "updatedLength": 27
+                }
+            ]
+        }
+    ]
+}

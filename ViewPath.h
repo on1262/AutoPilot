@@ -36,6 +36,7 @@ namespace autopilot {
 		ViewPathStep* endStep; //结束
 		QGraphicsScene* scene;
 		void addStep(QPointF newStepScreenPos, ViewPoint newStepRealPos); //添加一步
+		void addAllStepToScene(); //给地图调用提供的函数
 		void setNowStepRotation(float rotationDeg); //添加向前的数据
 		void setNowStepLength(float length); //添加向后的数据
 		void updateNowStepLength();

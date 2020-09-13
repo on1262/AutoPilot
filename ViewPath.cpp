@@ -63,6 +63,18 @@ void ViewPath::addStep(QPointF newStepScreenPos, ViewPoint newStepRealPos)
 	flush();
 }
 
+void autopilot::ViewPath::addAllStepToScene()
+{
+	auto step = startStep;
+	while (step != nullptr) {
+		step->setZValue(1.0f);
+		scene->addItem(step);
+		nowStep = step;
+		flush();
+		step = step->next;
+	}
+}
+
 void ViewPath::setNowStepRotation(float rotationDeg)
 {
 	nowStep->rotationVec.setRotationDeg(rotationDeg);

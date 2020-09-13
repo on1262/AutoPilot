@@ -20,7 +20,7 @@ QString Utils::getUIFolder()
 
 QString Utils::getMapFolder()
 {
-	return mapFolderPath;
+	return mapFolderPath + "\\";
 }
 
 QString Utils::getSettingsFolder()
