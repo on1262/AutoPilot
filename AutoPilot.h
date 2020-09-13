@@ -51,16 +51,13 @@ public:
 	void switchDrawingMode();
 	void addNewNavigationPoint(); //设置导航点
 	void startAutoNavigation(); //开启导航
+	void saveMapToFile(); //保存当前地图到json中
+	void loadMapFromFile();
 private:
 	Ui::MainWindow ui;
 	QString mapFolderPath;
-	QString testFolderPath;
-	QString cacheFolderPath;
-	QString settingsFilePath;
+	/*map下就是一个地图*/
 	void chooseMapFolder();
-	void chooseTestFolder();
-	void chooseCacheFolder();
-	void chooseSettingsFile();
 	void connectCarBluetoothSerial();
 	QTimer* bufferUpdateTimer = nullptr;
 };

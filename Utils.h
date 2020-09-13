@@ -12,6 +12,9 @@ private:
 	static QString data;
 public:
 	//文件夹位置存放
+
+	static QString mapFolderPath; //map是独立在data之外的
+
 	static QString getDataFolder();
 	static QString getUIFolder();
 	static QString getMapFolder();

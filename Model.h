@@ -62,9 +62,6 @@ namespace autopilot {
 		cv::Mat nowDisplayingImg;
 		bool isCamConnected = false;
 		RobustMatcher b;
-		QString testFolder;
-		QString mapFolderPath;
-		QString cacheFolder; //实时图片存储的文件
 		int cameraSamplingFrequency = 10; //对视频流采样的频率
 		int compressedWidth = 300; //压缩后图片宽度
 		int compressedHeight = 400; //压缩后图片高度
@@ -76,7 +73,7 @@ namespace autopilot {
 		void SURFTest();
 
 		/*配置文件*/
-		QString settingPath; //配置文件的路径
+		QString settingPath;
 		void readSettings(); //将设置文件中的内容读取到界面中
 		void writeSettings(); //将界面的内容保存到设置文件中
 		void setSettingPath(QString settingPath); //改变配置文件的路径
@@ -107,6 +104,12 @@ namespace autopilot {
 		void addNavigationNode(); //设置导航点
 		void startAutoNavigation(int pointID);
 		void cancelNowPath(); //撤销当前走过的路径
+		
+		/*地图加载写入*/
+		bool saveMapToFile(); //将当前map写入到文件中
+		bool loadMap(); //从Utils给出的folder读取map
+
+
 		/**
 		 * 坐标说明
 		 * 屏幕坐标和小车坐标是两套坐标，屏幕坐标以左上角为原点，单位长度对应一个像素

@@ -10,7 +10,7 @@ void autopilot::ViewNode::init(QGraphicsScene* scene, int ID, ViewPoint realPos,
 	this->ID = ID;
 	this->setZValue(1.5f);
 	scene->addItem(this);
-	auto IDItem = new QGraphicsTextItem(displayText);
+	IDItem = new QGraphicsTextItem(displayText);
 	IDItem->setDefaultTextColor(QColor(qRgb(255, 255, 255)));
 	IDItem->setPos(QPointF(screenPos.x(), screenPos.y() - 10));
 	IDItem->setZValue(3.0f);

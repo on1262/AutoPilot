@@ -1,0 +1,49 @@
+{
+    "car": {
+        "realPos":[1.0,1.0],
+        "screenPos:":[2.0,2.0],
+        "direction":170.0
+    },
+    "nodes": [{
+        "ID": 1,
+        "realPos": [1.0,2.0],
+        "screenPos": [1.0,2.0],
+        "displayText": "text"
+    }, {
+        "ID": 2,
+        "realPosX": 10.0,
+        "realPosY": 12.0,
+        "screenPosX": 1.0,
+        "screenPosY": 2.0,
+        "displayText": "text"
+    }],
+    "paths": [{
+        "startID": 1,
+        "endID" : 2,
+        "steps":[{
+            "screenPos":[1.0,2.0],
+            "lastRealPos":[1.0,1.0],
+            "nextRealPos":[1.0,1.0],
+            "rotationVec":[1.0,0,0],
+            "length":2.0,
+            "updatedLength":1.0
+        },{
+            "screenPos":[1.0,2.0],
+            "lastRealPos":[1.0,1.0],
+            "nextRealPos":[1.0,1.0],
+            "rotationVec":[1.0,0,0],
+            "length":2.0,
+            "updatedLength":1.0
+        }]
+    }
+    ],
+    "images":[{
+        "imageID":1,
+        "nodeID":2,
+        "direction":170.0
+    },{
+        "imageID":2,
+        "nodeID":1,
+        "direction":170.0
+    }]
+}

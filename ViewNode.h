@@ -9,6 +9,7 @@ namespace autopilot {
 		void init(QGraphicsScene* scene,int ID, ViewPoint realPos,QPointF screenPos,QString displayText);
 		int ID = 0;
 		ViewPoint realPos;
+		QGraphicsTextItem* IDItem;
 
 	};
 }

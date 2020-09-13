@@ -1,18 +1,16 @@
 {
     "AutoPilot": {
         "LoadTestMapWhenStart": false,
-        "MapFolderPath": "F:\\Project\\2020SummerHardwareDesign\\AutoPilot\\Data\\map"
+        "MapFolderPath": "F:/Project/2020SummerHardwareDesign/APGUI/AutoPilot/Data/map/testMap1"
     },
     "BlueToothSerial": {
         "BufferSize": 1000,
         "BufferUpdateFrequency": 115200
     },
     "CV": {
-        "CacheFolder": "F:\\Project\\2020SummerHardwareDesign\\AutoPilot\\Data\\cache",
         "CameraSamplingFrequency": 10,
         "CompressedHeight": 400,
         "CompressedWidth": 300,
-        "TestFolder": "F:\\Project\\2020SummerHardwareDesign\\AutoPilot\\Data\\test",
         "TranslateToBW": false
     },
     "CarBlueTooth": {

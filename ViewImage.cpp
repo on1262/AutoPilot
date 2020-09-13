@@ -5,14 +5,13 @@ using namespace autopilot;
 ViewImage * ViewImage::createFromFile(QString _path, int _ID)
 {
 	ViewImage* vi = new ViewImage();
-	vi->setID(_ID);
+	vi->image = cv::imread(_path.toStdString());
 	return vi;
 }
 
 ViewImage * autopilot::ViewImage::createFromMat(int _ID, cv::Mat _img)
 {
 	ViewImage* vi = new ViewImage();
-	vi->setID(_ID);
 	vi->image = _img;
 	return vi;
 }
@@ -56,13 +55,13 @@ void ViewImage::setStatus(ImageStatus sta)
 	switch (sta)
 	{
 	case OutOfRange:
-		this->setPixmap(QPixmap(cachePath + "photoPosGrey.png"));
+		this->setPixmap(QPixmap(Utils::getUIFolder() + "photoPosGrey.png"));
 		break;
 	case Detected:
-		this->setPixmap(QPixmap(cachePath + "photoPosBlue.png"));
+		this->setPixmap(QPixmap(Utils::getUIFolder() + "photoPosBlue.png"));
 		break;
 	case ErrorPos:
-		this->setPixmap(QPixmap(cachePath + "photoPosRed.png"));
+		this->setPixmap(QPixmap(Utils::getUIFolder() + "photoPosRed.png"));
 		break;
 	default:
 		break;

@@ -3,6 +3,7 @@
 #include <iostream>
 std::stringstream Utils::ss;
 double Utils::real2ViewCoef = 5;
+QString Utils::mapFolderPath = "F:\\Project\\2020SummerHardwareDesign\\APGUI\\AutoPilot\\Data\\map\\testMap1\\"; //map是独立在data之外的
 QTextCodec *Utils::codec = QTextCodec::codecForName("GBK");
 int Utils::nowID = 0;
 QTextBrowser* Utils::debugBrowser = nullptr;
@@ -19,7 +20,7 @@ QString Utils::getUIFolder()
 
 QString Utils::getMapFolder()
 {
-	return data + "map\\";
+	return mapFolderPath;
 }
 
 QString Utils::getSettingsFolder()
