@@ -5,24 +5,26 @@ using namespace autopilot;
 
 Floyd::Floyd(QVector<autopilot::ViewPath*> paths, QVector<ViewNode*> nodes)
 {
+	this->paths = paths;
 	//获取节点数，初始化mMatrix
 	mMatrix = new ViewMatrix(nodes.size(), nodes.size(),FLOYD_INF);
 	distMat = new ViewMatrix(nodes.size(), nodes.size(),0);
 	pathMat = new ViewMatrix(nodes.size(), nodes.size(),0);
-	//初始化矩阵
-	for (auto i = paths.begin(); i != paths.end(); i++) {
-		int sumLen = ViewPath::getPathSumLength(*i);
-		mMatrix->set((*i)->startID, (*i)->endID, sumLen);
-		mMatrix->set((*i)->endID, (*i)->startID, sumLen);
-	}
-	for (int j = 0; j < nodes.size(); j++) {
-		mMatrix->set(j, j, 0);
-	}
 	//顶点数等于node数量
 	for (auto k = nodes.begin(); k != nodes.end(); k++) {
 		mVexs.push_back((*k)->ID); //初始化为节点对应的ID
 	}
 	mVexNum = mVexs.size();
+	//初始化矩阵
+	for (auto i = paths.begin(); i != paths.end(); i++) {
+		int sumLen = ViewPath::getPathSumLength(*i);
+		mMatrix->set(getIndexOfID((*i)->startID), getIndexOfID((*i)->endID), sumLen);
+		mMatrix->set(getIndexOfID((*i)->endID), getIndexOfID((*i)->startID), sumLen);
+	}
+	for (int j = 0; j < nodes.size(); j++) {
+		mMatrix->set(j, j, 0);
+	}
+
 	//边数等于paths大小
 	mEdgNum = paths.size();
 	//更新矩阵

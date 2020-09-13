@@ -177,19 +177,17 @@ ViewPath * ViewPath::getReversePath(ViewPath* path) //将一个配置完成的ViewPath翻
 		reverseDirection.x = -reverseDirection.x;
 		reverseDirection.y = -reverseDirection.y;
 		//添加到路径
+		reversedStep = new ViewPathStep(reversedStep, reverseDirection); //链接自身last
 		if (step == path->startStep) { //最后执行
-
-			reversedStep = new ViewPathStep(reversedStep, reverseDirection); //链接自身last
-			reversedStep->last->next = reversedStep; //链接上一个next
 			reversedStep->next = nullptr; //链接自身next
 			reversedPath->endStep = reversedStep;
-		} else if (step == path->endStep) { //一开始执行
-			reversedStep = new ViewPathStep(nullptr, reverseDirection); //链接自身last
+		}
+		if (step == path->endStep) { //一开始执行
+			reversedStep->last = nullptr; //链接自身last
 			reversedPath->startStep = reversedStep;
 		}
-		else { //中间执行
-			reversedStep = new ViewPathStep(reversedStep, reverseDirection); //链接自身last
-			reversedStep->last->next = reversedStep; //链接上一个next
+		else {
+			reversedStep->last->next = reversedStep;
 		}
 
 		reversedStep->stepStatus = ViewPathStep::expanding;
@@ -251,7 +249,7 @@ QVector<QString> autopilot::ViewPath::getCommands(ViewPoint realPos, float rotat
 QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd)
 {
 	QString str;
-	int thetaDelta =  rotationEnd - rotationStart;
+	int thetaDelta = rotationEnd - rotationStart;
 	if (thetaDelta == 0) {
 		//如果没有旋转或差异可以忽略不计
 		return str;
@@ -279,7 +277,6 @@ QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd
 			else {
 				str += "L0";
 			}
-
 		}
 		//左起位补0
 		if (deltaAbs <= 99) {

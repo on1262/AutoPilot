@@ -14,5 +14,6 @@ void autopilot::ViewNode::init(QGraphicsScene* scene, int ID, ViewPoint realPos,
 	IDItem->setDefaultTextColor(QColor(qRgb(255, 255, 255)));
 	IDItem->setPos(QPointF(screenPos.x(), screenPos.y() - 10));
 	IDItem->setZValue(3.0f);
+	IDItem->setFlag(ItemIsMovable, true);
 	scene->addItem(IDItem); //添加到场景中
 }
