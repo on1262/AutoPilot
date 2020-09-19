@@ -23,9 +23,10 @@ public:
 	void updateCV();
 	void updateBlueToothSerial();
 	void updateCarBlueTooth();
-	//图像传输
+	//图像传输和图像识别
 	ViewCapture* capture;
 	void openCam();
+	void imageCompareWithNode();
 	//小车运动
 	bool flagForward = false;
 	bool flagBackward = false;
@@ -35,13 +36,15 @@ public:
 	void carMoveBackward();
 	void carTurnLeft();
 	void carTurnRight();
+	void carStop();
+	void carAngleAdapt();
 	void flushView();
 	//蓝牙串口
 	std::string textStr;
 	void bufferUpdate();
-	void startControl();
+	void sendContinueCmd();
 	void sendDataToArduino();
-
+	void bufferClear();
 	//导航和轨迹绘制
 	bool nowDrawingMode = false;
 	void switchDrawingMode();

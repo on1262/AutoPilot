@@ -15,7 +15,7 @@
     },
     "CarBlueTooth": {
         "BaudRate": 115200,
-        "COM": 3
+        "COM": 5
     },
     "CarControl": {
         "MoveSpeed": 10,

@@ -62,5 +62,5 @@ void ViewCapture::camUpdate()
 cv::Mat ViewCapture::getNowFrame()
 {
 	camUpdate();
-	return nowDisplayingImg;
+	return nowDisplayingImg.clone(); //如果不克隆，生成的所有图片都是一个引用
 }

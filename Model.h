@@ -49,16 +49,21 @@ namespace autopilot {
 		std::string getPortName();
 		void setPortName(int num);
 		std::string listenOnce();
+
 		/*串口信息显示*/
 		long bufferSize = 1000;
+
 		int bufferUpdateFrequency = 115200;
+
 		/*串口命令传输和识别*/
-		QString cmdStr;
-		int CmdsCount = 0; //接收到的指令数量
+		QTextBrowser* serialViewer;
+		bool isReadingSingleBuffer = false;
+		QString singleCmdBuffer; //存储未读取到的单个命令
 		void readBuffer(QString str);
 		void serialWrite(std::string str);
 		void readArduinoFeedBack(QString str);
 		bool isConnected();
+
 		/*图像识别*/
 		RobustMatcher b;
 		int cameraSamplingFrequency = 10; //对视频流采样的频率
@@ -67,6 +72,7 @@ namespace autopilot {
 		bool isTranslateToBW = false;//是否压缩成灰度图
 		ViewVector rotateAndCompareImage(int nodeID, float carDirection); //将当前图片和固定node的图片比较
 		ViewImage*  addViewImageFromNowNode(int nodeID, float rotation); //根据当前位置得到一张图片
+		void imageCompareWithNode(int nodeID);
 		ViewVector SURF(float matchThreshold, cv::Mat leftImg , cv::Mat rightImg);
 		void SURFMutiFiles(float matchThreshold, std::vector<std::string> leftFiles, std::vector<std::string> rightFiles);
 		void SURFTest();
@@ -103,7 +109,6 @@ namespace autopilot {
 		void addNavigationNode(); //设置导航点
 		void startAutoNavigation(int pointID);
 		void cancelNowPath(); //撤销当前走过的路径
-		
 		/*地图加载写入*/
 		bool saveMapToFile(); //将当前map写入到文件中
 		bool loadMap(); //从Utils给出的folder读取map
@@ -117,6 +122,6 @@ namespace autopilot {
 		**/
 		void ViewInit(QWidget* window); //初始化UI界面
 		QGraphicsView* pView;
-		Model(QGraphicsView* view, QLabel* labelNavigationStatus,QWidget* window);
+		Model(QGraphicsView* view, QLabel* labelNavigationStatus, QTextBrowser* serialViewer,QWidget* window);
 	};
 }

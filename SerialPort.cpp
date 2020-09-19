@@ -129,3 +129,5 @@ void SerialPort::closeSerial()
 {
     CloseHandle(this->handler);
 }
+
+

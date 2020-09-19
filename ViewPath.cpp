@@ -224,7 +224,7 @@ QVector<QString> autopilot::ViewPath::getCommands(ViewPoint realPos, float rotat
 	float nowRotation = 0.0f;
 	if (Utils::floatEqual(ViewPoint::getDistance(realPos, startStep->lastRealPos), 0, 1.5f) == false) {
 		//如果不在起点，先走直线到达预定区域
-		vec->push_back(getRotateCmd(rotation, ViewPoint::getDirection(realPos, startStep->lastRealPos))); //转向
+		vec->push_back(getRotateCmd(rotation, ViewPoint::getDirection(realPos, startStep->lastRealPos)));
 		vec->push_back(getMoveCmd(realPos, startStep->lastRealPos, 'F')); //前进
 		nowRotation = (ViewPoint::getDirection(realPos, startStep->lastRealPos));
 	}
@@ -286,10 +286,6 @@ QString autopilot::ViewPath::getRotateCmd(float rotationStart, float rotationEnd
 			str += "0";
 		}
 		str += QString::number(deltaAbs);
-		//合法性检测
-		if (str.size() != 5) {
-			Utils::log(true, "getRotate cmd: Illegal rotation cmd.");
-		}
 		return str;
 	}
 }

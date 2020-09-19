@@ -14,8 +14,11 @@ namespace autopilot {
 		QString getNextCmd(); //导航接收指令后的下一操作
 		void newRoute(QVector<ViewPath*> route, ViewPoint nowRealPos, float nowDirection);
 		void startNavigation();
+		void setEnableFlag(bool flag);
 		bool getNavigationState();
 	private:
+		bool isEnableFlag = false; //当前小车是否稳定
+		int TCount = 0;
 		int nowRunningCmdIndex = 0;
 		bool isNowNavigating = false; //是否在自动导航状态
 		QVector<QString> cmdList; //存储导航所需的指令

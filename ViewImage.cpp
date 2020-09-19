@@ -27,15 +27,17 @@ QString autopilot::ViewImage::saveAsCache()
 
 void autopilot::ViewImage::setImage(cv::Mat img)
 {
+	this->image = img;
 }
 
 cv::Mat autopilot::ViewImage::getImage()
 {
-	return cv::Mat();
+	return image;
 }
 
 void autopilot::ViewImage::showImage()
 {
+	cv::imshow(("Image at Node " + std::to_string(nodeID) + ", imageID=" + std::to_string(imageID)), image);
 }
 
 void autopilot::ViewImage::init(int imageID, int nodeID, float rotation)
@@ -44,9 +46,6 @@ void autopilot::ViewImage::init(int imageID, int nodeID, float rotation)
 	this->nodeID = nodeID;
 	this->rotation = rotation;
 }
-
-
-
 
 
 void ViewImage::setStatus(ImageStatus sta)
